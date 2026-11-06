@@ -18,8 +18,6 @@ import {
   HelpCircle,
   AlertCircle,
   CheckCircle2,
-  Lock,
-  Unlock,
   Check,
   RotateCcw,
   Sparkles,
@@ -37,7 +35,6 @@ export const RetentionDashboardView: React.FC<{ onProceedToConfirm: () => void }
     retainMultiplePlayers,
     releasePlayer,
     confirmTeamRetention,
-    unlockTeamRetention,
     setInspectedPlayer,
   } = useAuction();
 
@@ -85,9 +82,6 @@ export const RetentionDashboardView: React.FC<{ onProceedToConfirm: () => void }
   const nextSlotIndex = currentTeam.retainedPlayers.length;
   const nextTier = RETENTION_TIERS[nextSlotIndex] || { cost: 18.0, label: 'Standard Slot' };
 
-  // Check if this franchise has locked its retention decision
-  const isTeamConfirmed = Boolean(activeRoom.retentions[currentTeam.id]?.isConfirmed);
-
   const handleToggleSelect = (playerId: string) => {
     setSelectedPlayerIds((prev) =>
       prev.includes(playerId) ? prev.filter((id) => id !== playerId) : [...prev, playerId]
@@ -133,22 +127,9 @@ export const RetentionDashboardView: React.FC<{ onProceedToConfirm: () => void }
     setTimeout(() => setStatusNotification(null), 3500);
   };
 
-  const handleLockConfirmation = () => {
+  const handleProceedToConfirm = () => {
     confirmTeamRetention(currentTeam.id);
-    setStatusNotification({
-      type: 'success',
-      message: `Retention decisions successfully locked for ${currentTeam.name}!`,
-    });
-    setTimeout(() => setStatusNotification(null), 4000);
-  };
-
-  const handleUnlockConfirmation = () => {
-    unlockTeamRetention(currentTeam.id);
-    setStatusNotification({
-      type: 'success',
-      message: `Retention lock removed for ${currentTeam.name}. You can now modify selections freely.`,
-    });
-    setTimeout(() => setStatusNotification(null), 3500);
+    onProceedToConfirm();
   };
 
   return (
@@ -521,17 +502,11 @@ export const RetentionDashboardView: React.FC<{ onProceedToConfirm: () => void }
         <div>
           <div className="flex items-center gap-2">
             <span className="text-sm font-bold text-[#F5F4FF] block">
-              Lock & Verify {currentTeam.name} Decisions
+              {currentTeam.name} Retention Decisions
             </span>
-            {isTeamConfirmed ? (
-              <span className="px-2.5 py-0.5 rounded-full bg-[#20C997]/20 border border-[#20C997] text-[#20C997] text-[10px] font-bold font-mono">
-                LOCKED
-              </span>
-            ) : (
-              <span className="px-2.5 py-0.5 rounded-full bg-[#FFB84D]/20 border border-[#FFB84D]/40 text-[#FFB84D] text-[10px] font-bold font-mono">
-                DECISION PENDING
-              </span>
-            )}
+            <span className="px-2.5 py-0.5 rounded-full bg-[#00D6D0]/20 border border-[#00D6D0]/40 text-[#00D6D0] text-[10px] font-bold font-mono">
+              {retainedList.length} / 6 RETAINED
+            </span>
           </div>
           <span className="text-xs text-[#A5A9C3] mt-0.5 block">
             {retainedList.length} player(s) retained · Remaining auction purse: ₹{remainingPurse.toFixed(2)} Cr
@@ -539,36 +514,9 @@ export const RetentionDashboardView: React.FC<{ onProceedToConfirm: () => void }
         </div>
 
         <div className="flex items-center gap-3">
-          {!isTeamConfirmed ? (
-            <button
-              onClick={handleLockConfirmation}
-              className="px-5 py-3 rounded-2xl bg-[#E8BD68] hover:bg-[#f2cb7c] text-[#090D1B] font-extrabold text-xs shadow-lg transition-all flex items-center gap-2 cursor-pointer active:scale-95"
-            >
-              <Lock className="w-4 h-4" />
-              <span>LOCK RETENTION FOR {currentTeam.code}</span>
-            </button>
-          ) : (
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="px-3.5 py-2.5 rounded-2xl bg-[#090D1B] border border-[#20C997]/40 text-[#20C997] text-xs font-bold flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4" />
-                <span>{currentTeam.code} Retention Locked</span>
-              </div>
-
-              <button
-                type="button"
-                onClick={handleUnlockConfirmation}
-                className="px-4 py-2.5 rounded-2xl bg-[#FF5C75]/20 hover:bg-[#FF5C75] text-[#FF5C75] hover:text-white border border-[#FF5C75]/40 font-extrabold text-xs shadow-md transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
-                title="Remove lock and allow modifying retained player selections"
-              >
-                <Unlock className="w-3.5 h-3.5" />
-                <span>REMOVE LOCK</span>
-              </button>
-            </div>
-          )}
-
           <button
-            onClick={onProceedToConfirm}
-            className="px-6 py-3.5 rounded-2xl bg-[#A78BFA] hover:bg-[#b8a1fb] text-[#090D1B] font-extrabold text-xs shadow-lg shadow-[#A78BFA]/20 transition-all flex items-center gap-2 cursor-pointer"
+            onClick={handleProceedToConfirm}
+            className="px-6 py-3.5 rounded-2xl bg-[#A78BFA] hover:bg-[#b8a1fb] text-[#090D1B] font-extrabold text-xs shadow-lg shadow-[#A78BFA]/20 transition-all flex items-center gap-2 cursor-pointer active:scale-95"
           >
             <span>CENTRAL RETENTION CONFIRMATION</span>
             <ArrowRight className="w-4 h-4" />

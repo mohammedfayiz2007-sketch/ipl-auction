@@ -18,7 +18,6 @@ import {
   CheckCircle,
   HelpCircle,
   ArrowRight,
-  Lock,
   Check,
 } from 'lucide-react';
 
@@ -123,7 +122,7 @@ export const RetentionReleaseView: React.FC = () => {
     setTimeout(() => setNotification(null), 3500);
   };
 
-  const handleLockConfirmation = () => {
+  const handleSaveConfirmation = () => {
     if (activeRoom) {
       confirmTeamRetention(currentTeam.id);
     }
@@ -479,7 +478,7 @@ export const RetentionReleaseView: React.FC = () => {
       <div className="p-6 rounded-3xl bg-[#171D35] border border-[#202944] flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
         <div>
           <span className="text-sm font-bold text-[#F5F4FF] block">
-            Lock & Verify {currentTeam.name} Retention Decisions
+            {currentTeam.name} Retention Decisions
           </span>
           <span className="text-xs text-[#A5A9C3]">
             {squadPlayers.length} player(s) retained · Remaining auction purse: ₹{remainingPurse.toFixed(2)} Cr
@@ -488,10 +487,10 @@ export const RetentionReleaseView: React.FC = () => {
 
         <div className="flex items-center gap-3">
           <button
-            onClick={handleLockConfirmation}
-            className="px-5 py-3 rounded-2xl bg-[#20C997] hover:bg-[#1db889] text-[#090D1B] font-extrabold text-xs shadow-lg transition-all flex items-center gap-2 cursor-pointer"
+            onClick={handleSaveConfirmation}
+            className="px-5 py-3 rounded-2xl bg-[#20C997] hover:bg-[#1db889] text-[#090D1B] font-extrabold text-xs shadow-lg transition-all flex items-center gap-2 cursor-pointer active:scale-95"
           >
-            <Lock className="w-4 h-4" />
+            <CheckCircle className="w-4 h-4" />
             <span>CONFIRM RETENTION FOR {currentTeam.code}</span>
           </button>
         </div>
