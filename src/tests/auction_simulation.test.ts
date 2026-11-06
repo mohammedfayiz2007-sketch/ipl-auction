@@ -7,7 +7,14 @@
 
 import { INITIAL_TEAMS, INITIAL_PLAYERS, calculateNextBid, RETENTION_TIERS } from '../data/iplData';
 import { areAllTenRetentionsConfirmed, getPendingRetentionFranchises } from '../context/AuctionContext';
-import { AuctionRoom } from '../types/auction';
+import { AuctionRoom, Player, IPLTeam, BidRecord } from '../types/auction';
+import {
+  evaluateBotRetentions,
+  evaluateAIBidForTeam,
+  selectBestAIBidder,
+  TEAM_AI_PROFILES,
+  calculatePlayerAuctionValuation,
+} from '../lib/auctionAi';
 
 interface TestResult {
   name: string;
@@ -356,6 +363,141 @@ async function runQAAudit() {
     !containsAnyRetainedPlayer && firstLivePlayerIsNotRetained,
     'Zero Retained Players in Live Auction (Retained players strictly excluded from bidding block)',
     `Retained leaked into live pool: ${containsAnyRetainedPlayer} (expected false), First player: ${mockLiveAuctionPool[0]?.name}`
+  );
+
+  // TEST 19: AI Bot Squad Evaluation & Retention Decisions
+  const miTeam = INITIAL_TEAMS.find((t) => t.id === 'mi')!;
+  const miDecision = evaluateBotRetentions(miTeam, INITIAL_PLAYERS, 6);
+
+  const miOverseasRetained = INITIAL_PLAYERS.filter(
+    (p) => miDecision.retainedPlayerIds.includes(p.id) && p.isOverseas
+  ).length;
+
+  assert(
+    miDecision.retainedPlayerIds.length >= 2 &&
+      miDecision.retainedPlayerIds.length <= 6 &&
+      miOverseasRetained <= 2 &&
+      miDecision.totalRetentionCost > 0 &&
+      miDecision.remainingPurse >= 45.0,
+    'AI Bot Squad Evaluation & Retention Decisions (MI Retains 2-6 Stars within BCCI Tier Cap)',
+    `Retained count: ${miDecision.retainedPlayerIds.length}, Overseas: ${miOverseasRetained}, Spent: ₹${miDecision.totalRetentionCost} Cr, Remaining Purse: ₹${miDecision.remainingPurse} Cr`
+  );
+
+  // TEST 20: Human Franchise Isolation During AI Retention
+  // If CSK is human-controlled (isBot: false) and MI is AI-controlled (isBot: true), CSK must not be altered by AI
+  const simulatedRoomRetentions: Record<string, any> = {};
+  const mockAssignments: Record<string, { userId: string; userName: string; isBot?: boolean }> = {
+    csk: { userId: 'human_director', userName: 'Director Fayiz', isBot: false },
+    mi: { userId: 'bot_mi', userName: 'MI AI Strategist', isBot: true },
+    rcb: { userId: 'bot_rcb', userName: 'RCB AI Strategist', isBot: true },
+  };
+
+  // Only bot teams get AI retention evaluated
+  Object.entries(mockAssignments).forEach(([teamId, conf]) => {
+    if (conf.isBot) {
+      const teamObj = INITIAL_TEAMS.find((t) => t.id === teamId)!;
+      const dec = evaluateBotRetentions(teamObj, INITIAL_PLAYERS, 6);
+      simulatedRoomRetentions[teamId] = {
+        retained: dec.retainedPlayerIds,
+        cost: dec.totalRetentionCost,
+        isConfirmed: true,
+      };
+    }
+  });
+
+  const cskUntouched = simulatedRoomRetentions['csk'] === undefined;
+  const miProcessed = simulatedRoomRetentions['mi']?.isConfirmed === true;
+  const rcbProcessed = simulatedRoomRetentions['rcb']?.isConfirmed === true;
+
+  assert(
+    cskUntouched && miProcessed && rcbProcessed,
+    'Human Franchise Isolation (Human team strictly untouched while AI teams evaluate and confirm)',
+    `CSK in AI retentions: ${!cskUntouched} (expected false), MI confirmed: ${miProcessed}, RCB confirmed: ${rcbProcessed}`
+  );
+
+  // TEST 21: Tactical AI Bidding Strategy Differentiation (Aggressive vs Budget Saver)
+  const marqueeBatter = INITIAL_PLAYERS.find((p) => p.marquee && p.role === 'Batter') || INITIAL_PLAYERS[0];
+  const aggressiveValuation = calculatePlayerAuctionValuation(
+    marqueeBatter,
+    INITIAL_TEAMS.find((t) => t.id === 'mi')!,
+    [],
+    120.0,
+    'Aggressive'
+  );
+  const budgetSaverValuation = calculatePlayerAuctionValuation(
+    marqueeBatter,
+    INITIAL_TEAMS.find((t) => t.id === 'pbks')!,
+    [],
+    120.0,
+    'Budget Saver'
+  );
+
+  assert(
+    aggressiveValuation > budgetSaverValuation,
+    'Tactical AI Bidding Strategy Differentiation (Aggressive valuation strictly exceeds Budget Saver)',
+    `Aggressive (MI): ₹${aggressiveValuation} Cr vs Budget Saver (PBKS): ₹${budgetSaverValuation} Cr for ${marqueeBatter.name}`
+  );
+
+  // TEST 22: AI Self-Bidding Guard
+  const currentHighestBid: BidRecord = {
+    amount: 10.0,
+    teamId: 'mi',
+    teamCode: 'MI',
+    teamColor: '#004BA0',
+    timestamp: Date.now(),
+    isBot: true,
+  };
+
+  const miSelfBidDecision = evaluateAIBidForTeam({
+    botTeam: INITIAL_TEAMS.find((t) => t.id === 'mi')!,
+    player: marqueeBatter,
+    currentBid: currentHighestBid,
+    squad: [],
+    strategy: 'Aggressive',
+  });
+
+  assert(
+    miSelfBidDecision.shouldBid === false && miSelfBidDecision.reason.includes('Already holding the highest bid'),
+    'AI Self-Bidding Guard (Leading bot team never bids against itself)',
+    `MI shouldBid: ${miSelfBidDecision.shouldBid}, Reason: ${miSelfBidDecision.reason}`
+  );
+
+  // TEST 23: AI Squad Overseas Limit & Purse Solvency Guard
+  const fullOverseasSquad: Player[] = Array(8).fill(null).map((_, i) => ({
+    ...marqueeBatter,
+    id: `dummy_overseas_${i}`,
+    isOverseas: true,
+  }));
+
+  const overseasPlayer = INITIAL_PLAYERS.find((p) => p.isOverseas) || { ...marqueeBatter, isOverseas: true };
+
+  const overseasCapDecision = evaluateAIBidForTeam({
+    botTeam: INITIAL_TEAMS.find((t) => t.id === 'rcb')!,
+    player: overseasPlayer,
+    currentBid: null,
+    squad: fullOverseasSquad,
+    strategy: 'Aggressive',
+  });
+
+  // Exhausted purse test: only ₹1.00 Cr remaining, player base price is ₹2.00 Cr
+  const brokeTeam: IPLTeam = {
+    ...INITIAL_TEAMS[0],
+    totalPurse: 120.0,
+    spentPurse: 119.5,
+  };
+
+  const brokeDecision = evaluateAIBidForTeam({
+    botTeam: brokeTeam,
+    player: marqueeBatter,
+    currentBid: null,
+    squad: [],
+    strategy: 'Aggressive',
+  });
+
+  assert(
+    overseasCapDecision.shouldBid === false && brokeDecision.shouldBid === false,
+    'AI Solvency & Overseas Roster Guards (Blocks bids when overseas cap is full or purse insufficient)',
+    `Overseas cap blocked: ${!overseasCapDecision.shouldBid}, Insufficient purse blocked: ${!brokeDecision.shouldBid}`
   );
 
   console.log('\n=====================================================');

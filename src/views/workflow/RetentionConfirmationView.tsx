@@ -8,6 +8,7 @@ import { useAuction } from '../../context/AuctionContext';
 import { TeamEmblem } from '../../components/TeamEmblem';
 import { PlayerAvatar } from '../../components/PlayerAvatar';
 import { formatCrores } from '../../data/iplData';
+import { TEAM_AI_PROFILES } from '../../lib/auctionAi';
 import {
   CheckCircle2,
   Clock,
@@ -224,6 +225,10 @@ export const RetentionConfirmationView: React.FC<{ onFinalize: () => void }> = (
                 const isConfirmed = Boolean(ret?.isConfirmed);
                 const retainedCount = t.retainedPlayers.length;
 
+                const isBot = Boolean(activeRoom.teamAssignments[t.id]?.isBot);
+                const isUserFranchise = userTeam.id === t.id;
+                const strategy = TEAM_AI_PROFILES[t.id]?.strategy || 'Strategic';
+
                 return (
                   <div
                     key={t.id}
@@ -232,21 +237,39 @@ export const RetentionConfirmationView: React.FC<{ onFinalize: () => void }> = (
                     <div className="flex items-center gap-2.5">
                       <TeamEmblem code={t.code} size="sm" />
                       <div>
-                        <span className="font-bold text-[#F5F4FF] block">{t.name}</span>
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-bold text-[#F5F4FF] block">{t.name}</span>
+                          {isUserFranchise ? (
+                            <span className="px-1.5 py-0.2 rounded bg-[#00D6D0]/20 text-[#00D6D0] text-[9px] font-mono font-bold">
+                              YOU
+                            </span>
+                          ) : isBot ? (
+                            <span className="px-1.5 py-0.2 rounded bg-[#A78BFA]/20 text-[#A78BFA] text-[9px] font-mono font-bold flex items-center gap-0.5">
+                              <Cpu className="w-2.5 h-2.5" />
+                              <span>AI ({strategy})</span>
+                            </span>
+                          ) : (
+                            <span className="px-1.5 py-0.2 rounded bg-[#202944] text-[#A5A9C3] text-[9px] font-mono font-bold">
+                              DIRECTOR
+                            </span>
+                          )}
+                        </div>
                         <span className="text-[10px] text-[#A5A9C3]">
-                          {retainedCount} Retained · Remaining: ₹{(t.totalPurse - t.spentPurse).toFixed(2)} Cr
+                          {retainedCount} Retained (₹{t.spentPurse.toFixed(2)} Cr) · Remaining: ₹{(t.totalPurse - t.spentPurse).toFixed(2)} Cr
                         </span>
                       </div>
                     </div>
 
                     <div>
                       {isConfirmed ? (
-                        <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#20C997]/20 text-[#20C997] border border-[#20C997]/40 uppercase">
-                          Confirmed
+                        <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#20C997]/20 text-[#20C997] border border-[#20C997]/40 uppercase flex items-center gap-1">
+                          <Check className="w-3 h-3" />
+                          <span>Confirmed</span>
                         </span>
                       ) : (
-                        <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#202944] text-[#A5A9C3] uppercase">
-                          Pending
+                        <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#FFB84D]/20 text-[#FFB84D] border border-[#FFB84D]/30 uppercase flex items-center gap-1">
+                          <Clock className="w-3 h-3" />
+                          <span>Evaluating</span>
                         </span>
                       )}
                     </div>

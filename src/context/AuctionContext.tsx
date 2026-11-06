@@ -14,6 +14,7 @@ import {
   WorkflowStep,
   RoomStatus,
   ViewTab,
+  TeamRetentionDecision,
 } from '../types/auction';
 import {
   INITIAL_TEAMS,
@@ -24,6 +25,10 @@ import {
 import { soundEffects } from '../utils/soundEffects';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth, loginWithGoogle, logoutUser, syncUserProfileInFirestore, syncRoomToFirestore } from '../lib/firebase';
+import {
+  evaluateBotRetentions,
+  selectBestAIBidder,
+} from '../lib/auctionAi';
 
 /**
  * Helper to validate whether all 10 IPL franchises have submitted & confirmed their retentions.
@@ -245,6 +250,12 @@ export const AuctionProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const isExecutingHammerRef = useRef<boolean>(false);
   const botBiddingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  const activeRoomRef = useRef<AuctionRoom | null>(activeRoom);
+  const currentPlayerRef = useRef<Player | null>(null);
+  const isTimerRunningRef = useRef<boolean>(isTimerRunning);
+  const teamsRef = useRef<IPLTeam[]>(teams);
+  const playersRef = useRef<Player[]>(players);
 
   // Derive exact workflow step based on Section 1 Sequence:
   // LOGIN → CREATE/JOIN → LOBBY → SELECT TEAM → WAIT 10 TEAMS → RETENTION → CONFIRMATION → AUCTION READY → LIVE AUCTION → RESULTS
@@ -477,6 +488,13 @@ export const AuctionProvider: React.FC<{ children: React.ReactNode }> = ({ child
     return candidate;
   }, [activeRoom, auctionPool]);
 
+  // Keep refs up-to-date across all state transitions
+  activeRoomRef.current = activeRoom;
+  currentPlayerRef.current = currentPlayer;
+  isTimerRunningRef.current = isTimerRunning;
+  teamsRef.current = teams;
+  playersRef.current = players;
+
   const lastBidderTeam = activeRoom?.currentBid
     ? teams.find((t) => t.id === activeRoom.currentBid?.teamId) || null
     : null;
@@ -694,15 +712,146 @@ export const AuctionProvider: React.FC<{ children: React.ReactNode }> = ({ child
         }
       });
 
+      const nextStatus: RoomStatus =
+        prev.status === 'RETENTION_PHASE'
+          ? 'RETENTION_PHASE'
+          : prev.status === 'WAITING_FOR_PARTICIPANTS' || prev.status === 'TEAM_SELECTION'
+          ? 'READY_TO_START'
+          : prev.status;
+
       return {
         ...prev,
-        status: 'READY_TO_START',
+        status: nextStatus,
         teamAssignments: currentAssigned,
       };
     });
 
     addActivity('room_created', 'BCCI Intelligence Bots assigned to all remaining vacant franchise desks.');
+
+    if (activeRoom.status === 'RETENTION_PHASE') {
+      setTimeout(() => {
+        executeAIRetentions();
+      }, 100);
+    }
   };
+
+  // Core AI Retention Engine: Automatically evaluates squads, decides retentions/releases,
+  // deducts tiered BCCI purse, confirms decisions, and syncs to Firestore.
+  const executeAIRetentions = useCallback(() => {
+    if (!activeRoom) return;
+
+    // Identify all bot-controlled franchises (human franchises are strictly ignored)
+    const botAssignments = Object.entries(activeRoom.teamAssignments).filter(
+      ([_, conf]) => conf.isBot
+    );
+
+    if (botAssignments.length === 0) return;
+
+    let updatedPlayers = [...players];
+    let updatedTeams = [...teams];
+    const newRetentionDecisions: Record<string, TeamRetentionDecision> = {};
+    const newlyRetainedIds = new Set<string>();
+
+    for (const [botTeamId] of botAssignments) {
+      const team = updatedTeams.find((t) => t.id === botTeamId);
+      if (!team) continue;
+
+      // Evaluate squad retentions for this bot team using the AI engine
+      const decision = evaluateBotRetentions(team, updatedPlayers, 6);
+
+      // Apply to team state
+      updatedTeams = updatedTeams.map((t) =>
+        t.id === botTeamId
+          ? {
+              ...t,
+              retainedPlayers: decision.retainedPlayerIds,
+              spentPurse: decision.totalRetentionCost,
+            }
+          : t
+      );
+
+      // Apply to player records
+      decision.retainedPlayerIds.forEach((pid, idx) => {
+        newlyRetainedIds.add(pid);
+        const tier = RETENTION_TIERS[idx] || { cost: 18.0 };
+        updatedPlayers = updatedPlayers.map((p) =>
+          p.id === pid
+            ? {
+                ...p,
+                status: 'retained',
+                soldTo: botTeamId,
+                soldPrice: tier.cost,
+              }
+            : p
+        );
+      });
+
+      // Mark released players as available
+      decision.releasedPlayerIds.forEach((pid) => {
+        updatedPlayers = updatedPlayers.map((p) =>
+          p.id === pid && p.status === 'retained' && p.soldTo === botTeamId
+            ? { ...p, status: 'available', soldTo: undefined, soldPrice: undefined }
+            : p
+        );
+      });
+
+      // Construct verified retention record
+      newRetentionDecisions[botTeamId] = {
+        teamId: botTeamId,
+        retainedPlayerIds: decision.retainedPlayerIds,
+        releasedPlayerIds: decision.releasedPlayerIds,
+        totalRetentionCost: decision.totalRetentionCost,
+        remainingPurse: decision.remainingPurse,
+        isConfirmed: true,
+        confirmedAt: Date.now(),
+      };
+    }
+
+    // Update state
+    setPlayers(updatedPlayers);
+    setTeams(updatedTeams);
+
+    // Compute strictly eligible players excluding all retained players
+    const allRetainedIds = new Set<string>();
+    updatedTeams.forEach((t) => (t.retainedPlayers || []).forEach((id) => allRetainedIds.add(id)));
+    if (activeRoom.retentions) {
+      Object.values(activeRoom.retentions).forEach((r) => {
+        (r.retainedPlayerIds || []).forEach((id) => allRetainedIds.add(id));
+      });
+    }
+    newlyRetainedIds.forEach((id) => allRetainedIds.add(id));
+
+    const strictlyEligibleIds = updatedPlayers
+      .filter((p) => !allRetainedIds.has(p.id) && p.status !== 'retained')
+      .map((p) => p.id);
+
+    setActiveRoom((prev) => {
+      if (!prev) return null;
+      const combinedRetentions = {
+        ...prev.retentions,
+        ...newRetentionDecisions,
+      };
+
+      const confirmedCount = Object.values(combinedRetentions).filter((r) => r.isConfirmed).length;
+      const nextStatus: RoomStatus = confirmedCount === 10 ? 'RETENTION_SUBMITTED' : prev.status;
+
+      const nextRoom: AuctionRoom = {
+        ...prev,
+        status: nextStatus,
+        retentions: combinedRetentions,
+        eligibleAuctionPlayerIds: strictlyEligibleIds,
+      };
+
+      // Sync immediately to Firestore
+      syncRoomToFirestore(nextRoom).catch(() => {});
+      return nextRoom;
+    });
+
+    addActivity(
+      'retention',
+      `AI Intelligence evaluated & confirmed retention decisions for ${botAssignments.length} franchises with official BCCI purse deductions.`
+    );
+  }, [activeRoom, players, teams, addActivity]);
 
   // Start Retention Phase (Section 6)
   const startRetentionPhase = () => {
@@ -718,6 +867,11 @@ export const AuctionProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     setManualWorkflowStep(null);
     addActivity('retention', 'Host has initiated the Mega Auction Retention Phase. All 10 managers active.');
+
+    // Automatically trigger AI retention evaluation for all bot-controlled franchises
+    setTimeout(() => {
+      executeAIRetentions();
+    }, 100);
   };
 
   // Confirm Team Retention (Section 8)
@@ -833,50 +987,22 @@ export const AuctionProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   // Auto-confirm bot retentions (Section 8)
-  const autoConfirmBotRetentions = () => {
-    if (!activeRoom) return;
+  const autoConfirmBotRetentions = useCallback(() => {
+    executeAIRetentions();
+  }, [executeAIRetentions]);
 
-    const allRetainedIds = new Set<string>();
-    teams.forEach((t) => (t.retainedPlayers || []).forEach((id) => allRetainedIds.add(id)));
-    if (activeRoom.retentions) {
-      Object.values(activeRoom.retentions).forEach((r) => {
-        (r.retainedPlayerIds || []).forEach((id) => allRetainedIds.add(id));
-      });
+  // Auto-evaluate AI retentions when in RETENTION_PHASE if any bot team is pending
+  useEffect(() => {
+    if (!activeRoom || activeRoom.status !== 'RETENTION_PHASE') return;
+
+    const hasUnconfirmedBot = Object.entries(activeRoom.teamAssignments).some(
+      ([teamId, conf]) => conf.isBot && !activeRoom.retentions?.[teamId]?.isConfirmed
+    );
+
+    if (hasUnconfirmedBot) {
+      executeAIRetentions();
     }
-
-    const strictlyEligibleIds = players
-      .filter((p) => !allRetainedIds.has(p.id) && p.status !== 'retained')
-      .map((p) => p.id);
-
-    setActiveRoom((prev) => {
-      if (!prev) return null;
-      const updatedRetentions = { ...prev.retentions };
-
-      INITIAL_TEAMS.forEach((t) => {
-        const teamData = teams.find((item) => item.id === t.id) || t;
-        if (!updatedRetentions[t.id]?.isConfirmed) {
-          updatedRetentions[t.id] = {
-            teamId: t.id,
-            retainedPlayerIds: teamData.retainedPlayers,
-            releasedPlayerIds: [],
-            totalRetentionCost: teamData.spentPurse,
-            remainingPurse: Number((teamData.totalPurse - teamData.spentPurse).toFixed(2)),
-            isConfirmed: true,
-            confirmedAt: Date.now(),
-          };
-        }
-      });
-
-      return {
-        ...prev,
-        status: 'RETENTION_SUBMITTED',
-        retentions: updatedRetentions,
-        eligibleAuctionPlayerIds: strictlyEligibleIds,
-      };
-    });
-
-    addActivity('retention', 'All franchise retention submissions have been locked and confirmed. Retained players excluded from auction.');
-  };
+  }, [activeRoom?.status, activeRoom?.teamAssignments, activeRoom?.retentions, executeAIRetentions]);
 
   // Finalize All Retentions & Generate Final Auction Pool (Sections 9 & 10)
   const finalizeAllRetentions = (): { success: boolean; error?: string } => {
@@ -1223,22 +1349,40 @@ export const AuctionProvider: React.FC<{ children: React.ReactNode }> = ({ child
     [activeRoom, currentPlayer, teams, players, addActivity]
   );
 
-  // Bot bidding AI trigger
+  // Authoritative Real-Time AI Bidding Engine
   useEffect(() => {
+    // 1. Pre-condition checks: Must be in active live auction with timer running
     if (
       !activeRoom ||
       !isTimerRunning ||
       !activeRoom.settings.autoBotBidding ||
       !currentPlayer ||
-      activeRoom.status !== 'LIVE_AUCTION'
+      activeRoom.status !== 'LIVE_AUCTION' ||
+      isExecutingHammerRef.current
     ) {
+      if (botBiddingTimeoutRef.current) {
+        clearTimeout(botBiddingTimeoutRef.current);
+        botBiddingTimeoutRef.current = null;
+      }
       return;
     }
 
-    if (botBiddingTimeoutRef.current) {
-      clearTimeout(botBiddingTimeoutRef.current);
+    // 2. Authoritative check: Only Room Host runs AI bids (avoids multiplayer duplicate bidding)
+    const isHost =
+      !activeRoom.hostId ||
+      activeRoom.hostId === user.id ||
+      (auth.currentUser && activeRoom.hostId === auth.currentUser.uid);
+    if (!isHost) {
+      return;
     }
 
+    // 3. Clear any pending bid timeout for previous state
+    if (botBiddingTimeoutRef.current) {
+      clearTimeout(botBiddingTimeoutRef.current);
+      botBiddingTimeoutRef.current = null;
+    }
+
+    // 4. Find all eligible AI bot teams that do NOT hold the current highest bid
     const botTeams = Object.entries(activeRoom.teamAssignments)
       .filter(([teamId, conf]) => conf.isBot && teamId !== activeRoom.currentBid?.teamId)
       .map(([teamId]) => teams.find((t) => t.id === teamId))
@@ -1246,38 +1390,61 @@ export const AuctionProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     if (botTeams.length === 0) return;
 
-    const randomBot = botTeams[Math.floor(Math.random() * botTeams.length)];
-    const currentBidVal = activeRoom.currentBid?.amount || 0;
-    const nextBidVal = currentBidVal === 0 ? currentPlayer.basePrice : calculateNextBid(currentBidVal);
+    // 5. Evaluate best AI bidder using strategic AI evaluation engine
+    const bestBidder = selectBestAIBidder({
+      botTeams,
+      player: currentPlayer,
+      currentBid: activeRoom.currentBid,
+      allPlayers: players,
+    });
 
-    const maxValThreshold = currentPlayer.marquee ? 22.0 : currentPlayer.role === 'All-Rounder' ? 14.0 : 10.0;
-    const botRemainingPurse = randomBot.totalPurse - randomBot.spentPurse;
-
-    if (nextBidVal <= maxValThreshold && botRemainingPurse >= nextBidVal + 5.0) {
-      const shouldBidChance = timerSecondsLeft > 2 && Math.random() > 0.45;
-
-      if (shouldBidChance) {
-        const delay = Math.floor(Math.random() * 2000) + 2000;
-        botBiddingTimeoutRef.current = setTimeout(() => {
-          placeBid(randomBot.id);
-        }, delay);
-      }
+    if (!bestBidder || !bestBidder.shouldBid) {
+      return;
     }
+
+    // 6. Schedule human-like response delay:
+    // Opening bid: 1.0s to 2.0s
+    // Counter-bid: 1.4s to 2.6s
+    const isOpeningBid = !activeRoom.currentBid;
+    const delay = isOpeningBid
+      ? Math.floor(Math.random() * 1000) + 1000
+      : Math.floor(Math.random() * 1200) + 1400;
+
+    const targetPlayerId = currentPlayer.id;
+    const targetBidAmount = bestBidder.proposedBidAmount;
+    const selectedBotTeamId = bestBidder.botTeamId;
+
+    botBiddingTimeoutRef.current = setTimeout(() => {
+      // Re-verify conditions right before executing
+      if (!isTimerRunningRef.current || isExecutingHammerRef.current) return;
+      if (!currentPlayerRef.current || currentPlayerRef.current.id !== targetPlayerId) return;
+      if (currentPlayerRef.current.status === 'sold' || currentPlayerRef.current.status === 'retained') return;
+
+      const currentRoom = activeRoomRef.current;
+      if (!currentRoom || currentRoom.status !== 'LIVE_AUCTION') return;
+      if (currentRoom.currentBid?.teamId === selectedBotTeamId) return; // Prevent self-bid
+
+      // Place authoritative AI bid
+      placeBid(selectedBotTeamId, targetBidAmount);
+    }, delay);
 
     return () => {
       if (botBiddingTimeoutRef.current) {
         clearTimeout(botBiddingTimeoutRef.current);
+        botBiddingTimeoutRef.current = null;
       }
     };
   }, [
-    activeRoom?.currentBid,
-    activeRoom?.settings.autoBotBidding,
     activeRoom?.status,
+    activeRoom?.settings.autoBotBidding,
+    activeRoom?.currentBid?.amount,
+    activeRoom?.currentBid?.teamId,
+    currentPlayer?.id,
     isTimerRunning,
-    currentPlayer,
-    timerSecondsLeft,
     placeBid,
     teams,
+    players,
+    user.id,
   ]);
 
   // Synchronized countdown interval
