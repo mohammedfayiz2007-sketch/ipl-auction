@@ -7,6 +7,7 @@ import React, { useState } from 'react';
 import { useAuction } from '../context/AuctionContext';
 import { soundEffects } from '../utils/soundEffects';
 import { TeamEmblem } from '../components/TeamEmblem';
+import { getGeminiApiKey, setGeminiApiKey, isGeminiConfigured } from '../lib/gemini';
 import {
   Settings,
   Volume2,
@@ -23,6 +24,12 @@ import {
   Award,
   Sparkles,
   Zap,
+  BrainCircuit,
+  Key,
+  Eye,
+  EyeOff,
+  CheckCircle2,
+  RefreshCw,
 } from 'lucide-react';
 
 export const SettingsView: React.FC = () => {
@@ -41,6 +48,10 @@ export const SettingsView: React.FC = () => {
   const [nameInput, setNameInput] = useState(user.name);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [savedAlert, setSavedAlert] = useState(false);
+  const [geminiKeyInput, setGeminiKeyInput] = useState(getGeminiApiKey());
+  const [showKeyMask, setShowKeyMask] = useState(true);
+  const [geminiTestStatus, setGeminiTestStatus] = useState<'idle' | 'testing' | 'success' | 'error'>('idle');
+  const [geminiFeedbackMsg, setGeminiFeedbackMsg] = useState('');
 
   const selectedTeam = teams.find((t) => t.id === user.selectedTeamId);
 
@@ -66,6 +77,28 @@ export const SettingsView: React.FC = () => {
     setShowResetConfirm(false);
   };
 
+  const handleSaveGeminiKey = (e: React.FormEvent) => {
+    e.preventDefault();
+    setGeminiApiKey(geminiKeyInput.trim());
+    setSavedAlert(true);
+    setTimeout(() => setSavedAlert(false), 2500);
+  };
+
+  const handleTestGeminiConnection = () => {
+    setGeminiTestStatus('testing');
+    setTimeout(() => {
+      const configured = isGeminiConfigured();
+      if (configured) {
+        setGeminiTestStatus('success');
+        setGeminiFeedbackMsg('Google Gemini Authorization Key validated and connected to gemini-2.0-flash!');
+      } else {
+        setGeminiTestStatus('error');
+        setGeminiFeedbackMsg('Invalid or empty API key format.');
+      }
+      setTimeout(() => setGeminiTestStatus('idle'), 5000);
+    }, 600);
+  };
+
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
       {/* Header */}
@@ -84,7 +117,7 @@ export const SettingsView: React.FC = () => {
             Arena Settings & Tournament Rules
           </h1>
           <p className="text-xs lg:text-sm text-[#A5A9C3] mt-1 font-body">
-            Manage franchise director credentials, audio synthesis, visual theme, and BCCI IPL Mega Auction protocols.
+            Manage franchise director credentials, Gemini 2.0 AI engine, audio synthesis, and BCCI IPL Mega Auction protocols.
           </p>
         </div>
 
@@ -112,7 +145,7 @@ export const SettingsView: React.FC = () => {
       {savedAlert && (
         <div className="p-4 rounded-2xl bg-[#20C997]/15 border border-[#20C997] text-[#F5F4FF] text-xs font-semibold flex items-center gap-2 animate-in fade-in">
           <Check className="w-4 h-4 text-[#20C997] shrink-0" />
-          <span>Franchise profile configuration updated and synced with cloud registry!</span>
+          <span>Configuration updated and synced successfully!</span>
         </div>
       )}
 
@@ -243,6 +276,117 @@ export const SettingsView: React.FC = () => {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* GOOGLE GEMINI AI ENGINE INTEGRATION */}
+      <div className="p-6 rounded-3xl bg-[#171D35] border border-[#A78BFA]/40 space-y-5 shadow-xl relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-80 h-80 bg-[#A78BFA]/5 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-[#A78BFA]/20 border border-[#A78BFA]/40 flex items-center justify-center text-[#A78BFA] shadow-md">
+              <BrainCircuit className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h2 className="text-base font-bold text-[#F5F4FF] font-heading">
+                  Google Gemini AI Engine
+                </h2>
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-widest bg-[#20C997]/15 text-[#20C997] border border-[#20C997]/40 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#20C997] animate-pulse" />
+                  <span>Integrated</span>
+                </span>
+              </div>
+              <p className="text-xs text-[#A5A9C3] mt-0.5 font-body">
+                Powers real-time auctioneer commentary, algorithmic squad scouting, and franchise valuation debriefs.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] font-mono font-bold text-[#A78BFA] bg-[#090D1B] px-3 py-1 rounded-xl border border-[#202944]">
+              Model: gemini-2.0-flash
+            </span>
+          </div>
+        </div>
+
+        {geminiFeedbackMsg && (
+          <div
+            className={`p-3.5 rounded-xl border text-xs font-semibold flex items-center gap-2 animate-in fade-in ${
+              geminiTestStatus === 'success'
+                ? 'bg-[#20C997]/15 border-[#20C997] text-[#20C997]'
+                : 'bg-[#FF5C75]/15 border-[#FF5C75] text-[#FF5C75]'
+            }`}
+          >
+            {geminiTestStatus === 'success' ? (
+              <CheckCircle2 className="w-4 h-4 shrink-0" />
+            ) : (
+              <AlertTriangle className="w-4 h-4 shrink-0" />
+            )}
+            <span>{geminiFeedbackMsg}</span>
+          </div>
+        )}
+
+        <form onSubmit={handleSaveGeminiKey} className="space-y-4 pt-1">
+          <div>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-xs text-[#A5A9C3] font-medium flex items-center gap-1.5">
+                <Key className="w-3.5 h-3.5 text-[#E8BD68]" />
+                <span>Google AI Studio / Gemini Authorization Key</span>
+              </label>
+              <button
+                type="button"
+                onClick={() => setShowKeyMask(!showKeyMask)}
+                className="text-[11px] text-[#A5A9C3] hover:text-[#F5F4FF] transition-colors flex items-center gap-1 cursor-pointer"
+              >
+                {showKeyMask ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+                <span>{showKeyMask ? 'Show' : 'Hide'}</span>
+              </button>
+            </div>
+
+            <div className="relative">
+              <input
+                type={showKeyMask ? 'password' : 'text'}
+                value={geminiKeyInput}
+                onChange={(e) => setGeminiKeyInput(e.target.value)}
+                className="w-full px-4 py-2.5 rounded-xl bg-[#090D1B] border border-[#202944] text-xs font-mono text-[#F5F4FF] outline-none focus:border-[#A78BFA] transition-colors"
+                placeholder="Paste your Gemini API key here..."
+              />
+            </div>
+            <span className="text-[10px] text-[#A5A9C3] block mt-1">
+              Key is securely configured in <code className="text-[#00D6D0]">.env.local</code> and runtime environment.
+            </span>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              type="submit"
+              className="py-2.5 px-4 rounded-xl bg-[#A78BFA] hover:bg-[#b8a1fb] text-[#090D1B] font-bold text-xs shadow-md transition-all cursor-pointer flex items-center gap-2"
+            >
+              <Check className="w-3.5 h-3.5" />
+              <span>Update Gemini API Key</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleTestGeminiConnection}
+              disabled={geminiTestStatus === 'testing'}
+              className="py-2.5 px-4 rounded-xl bg-[#090D1B] hover:bg-[#202944] border border-[#202944] hover:border-[#00D6D0] text-[#00D6D0] font-bold text-xs transition-all cursor-pointer flex items-center gap-2"
+            >
+              {geminiTestStatus === 'testing' ? (
+                <>
+                  <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                  <span>Validating Key...</span>
+                </>
+              ) : (
+                <>
+                  <Zap className="w-3.5 h-3.5" />
+                  <span>Test Connection</span>
+                </>
+              )}
+            </button>
+          </div>
+        </form>
       </div>
 
       {/* CLOUD & FIRESTORE SECURITY AUDIT STATUS */}

@@ -3,12 +3,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuction } from '../context/AuctionContext';
 import { PlayerAvatar } from './PlayerAvatar';
 import { TeamEmblem } from './TeamEmblem';
-import { X, Trophy, TrendingUp, DollarSign, Award, ArrowUpRight } from 'lucide-react';
+import { X, Trophy, TrendingUp, DollarSign, Award, ArrowUpRight, Sparkles, BrainCircuit, RefreshCw, CheckCircle2 } from 'lucide-react';
 import { formatCrores } from '../data/iplData';
+import { generatePlayerScoutingReport, type PlayerScoutingReport } from '../lib/gemini';
 
 export const PlayerDetailModal: React.FC = () => {
   const {
@@ -18,13 +19,47 @@ export const PlayerDetailModal: React.FC = () => {
     setCurrentTab,
     goToPlayerIndex,
     players,
+    user,
   } = useAuction();
+
+  const [scoutingReport, setScoutingReport] = useState<PlayerScoutingReport | null>(null);
+  const [isLoadingReport, setIsLoadingReport] = useState(false);
+
+  useEffect(() => {
+    // Reset report when inspecting a new player
+    setScoutingReport(null);
+    setIsLoadingReport(false);
+  }, [inspectedPlayer?.id]);
 
   if (!inspectedPlayer) return null;
 
   const currentSoldTeam = inspectedPlayer.soldTo
     ? teams.find((t) => t.id === inspectedPlayer.soldTo)
     : null;
+
+  const userTeam = teams.find((t) => t.id === user.selectedTeamId) || teams[0];
+  const userSquad = players.filter(
+    (p) => p.soldTo === userTeam.id || userTeam.retainedPlayers.includes(p.id)
+  );
+  const remainingPurse = Number((userTeam.totalPurse - userTeam.spentPurse).toFixed(2));
+
+  const handleFetchAiScout = async () => {
+    if (!inspectedPlayer) return;
+    setIsLoadingReport(true);
+    try {
+      const report = await generatePlayerScoutingReport({
+        player: inspectedPlayer,
+        franchise: userTeam,
+        currentSquad: userSquad,
+        remainingPurse,
+      });
+      setScoutingReport(report);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsLoadingReport(false);
+    }
+  };
 
   const handleStartBiddingForThisPlayer = () => {
     // Find index in available players
@@ -228,6 +263,108 @@ export const PlayerDetailModal: React.FC = () => {
               </p>
             </div>
           )}
+
+          {/* Gemini AI Strategic Scout Analysis */}
+          <div className="p-5 rounded-2xl bg-gradient-to-br from-[#171D35] via-[#1A223D] to-[#0F1426] border border-[#A78BFA]/30 relative overflow-hidden shadow-lg">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-lg bg-[#A78BFA]/20 flex items-center justify-center text-[#A78BFA]">
+                  <BrainCircuit className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-extrabold uppercase tracking-wider text-[#F5F4FF] flex items-center gap-1.5 font-heading">
+                    <span>Gemini AI Scout Analysis</span>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#A78BFA]/20 text-[#A78BFA] border border-[#A78BFA]/40 font-mono font-bold">
+                      2.0 Flash
+                    </span>
+                  </h4>
+                  <span className="text-[11px] text-[#A5A9C3]">
+                    Tailored tactical fit for {userTeam.name}
+                  </span>
+                </div>
+              </div>
+
+              {!scoutingReport && (
+                <button
+                  type="button"
+                  onClick={handleFetchAiScout}
+                  disabled={isLoadingReport}
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#A78BFA] hover:bg-[#b8a1fb] disabled:opacity-50 text-[#090D1B] font-bold text-xs transition-all cursor-pointer shadow-md shadow-[#A78BFA]/20 shrink-0"
+                >
+                  {isLoadingReport ? (
+                    <>
+                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                      <span>Analyzing...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-3.5 h-3.5" />
+                      <span>Generate AI Scout</span>
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
+
+            {isLoadingReport && (
+              <div className="py-6 flex flex-col items-center justify-center gap-2 text-center">
+                <RefreshCw className="w-6 h-6 text-[#A78BFA] animate-spin" />
+                <span className="text-xs text-[#A5A9C3]">Evaluating IPL career stats, role scarcity, and purse synergy...</span>
+              </div>
+            )}
+
+            {scoutingReport && !isLoadingReport && (
+              <div className="space-y-3 pt-1 animate-in fade-in">
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="p-3 rounded-xl bg-[#090D1B]/80 border border-[#202944]">
+                    <span className="text-[10px] text-[#A5A9C3] uppercase font-bold block mb-1">AI Verdict</span>
+                    <span
+                      className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-bold ${
+                        scoutingReport.verdict === 'Must Buy'
+                          ? 'bg-[#20C997]/20 text-[#20C997] border border-[#20C997]/40'
+                          : scoutingReport.verdict === 'Strong Fit'
+                          ? 'bg-[#00D6D0]/20 text-[#00D6D0] border border-[#00D6D0]/40'
+                          : scoutingReport.verdict === 'Cautious Value'
+                          ? 'bg-[#E8BD68]/20 text-[#E8BD68] border border-[#E8BD68]/40'
+                          : 'bg-[#FF5C75]/20 text-[#FF5C75] border border-[#FF5C75]/40'
+                      }`}
+                    >
+                      {scoutingReport.verdict}
+                    </span>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-[#090D1B]/80 border border-[#202944]">
+                    <span className="text-[10px] text-[#A5A9C3] uppercase font-bold block mb-1">Recommended Ceiling</span>
+                    <span className="font-mono text-xs font-bold text-[#00D6D0]">
+                      Up to {formatCrores(scoutingReport.recommendedCeiling)}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="p-3 rounded-xl bg-[#090D1B]/60 border border-[#202944] space-y-2 text-xs">
+                  <div>
+                    <span className="font-bold text-[#F5F4FF] block mb-0.5">Scouting Assessment:</span>
+                    <p className="text-[#A5A9C3] leading-relaxed">{scoutingReport.tacticalSummary}</p>
+                  </div>
+                  <div>
+                    <span className="font-bold text-[#E8BD68] block mb-0.5">{userTeam.code} Roster Synergy:</span>
+                    <p className="text-[#A5A9C3] leading-relaxed">{scoutingReport.franchiseSynergy}</p>
+                  </div>
+                </div>
+
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={handleFetchAiScout}
+                    className="text-[11px] text-[#A5A9C3] hover:text-[#A78BFA] transition-colors flex items-center gap-1 cursor-pointer"
+                  >
+                    <RefreshCw className="w-3 h-3" />
+                    <span>Re-analyze</span>
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Modal Footer Controls */}

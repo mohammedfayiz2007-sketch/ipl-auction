@@ -3,12 +3,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useAuction } from '../context/AuctionContext';
 import { IPLTeam } from '../types/auction';
 import { TeamEmblem } from '../components/TeamEmblem';
 import { PlayerAvatar } from '../components/PlayerAvatar';
 import { formatCrores, calculateNextBid } from '../data/iplData';
+import { generateAuctionCommentary } from '../lib/gemini';
 import {
   Gavel,
   Radio,
@@ -66,6 +67,38 @@ export const LiveAuctionView: React.FC = () => {
   const [activeSquadTeamId, setActiveSquadTeamId] = useState<string>(user.selectedTeamId || 'csk');
   const [squadRoleFilter, setSquadRoleFilter] = useState<string>('All');
   const [sidebarViewMode, setSidebarViewMode] = useState<'teams' | 'my_squad'>('teams');
+  const [geminiCommentary, setGeminiCommentary] = useState<string>('');
+
+  useEffect(() => {
+    if (!currentPlayer) return;
+
+    let isCancelled = false;
+    const currentBid = activeRoom?.currentBid;
+
+    if (currentBid && lastBidderTeam) {
+      const prevBid = activeRoom?.bidHistory?.[1];
+      const prevTeam = prevBid ? teams.find((t) => t.id === prevBid.teamId) : null;
+      generateAuctionCommentary({
+        player: currentPlayer,
+        bidAmount: currentBid.amount,
+        biddingTeam: lastBidderTeam,
+        previousBidder: prevTeam,
+        isWinningBid: timerSecondsLeft <= 3 && timerSecondsLeft > 0,
+      }).then((line) => {
+        if (!isCancelled && line) {
+          setGeminiCommentary(line);
+        }
+      });
+    } else {
+      setGeminiCommentary(
+        `Auctioneer brings ${currentPlayer.name} (${currentPlayer.role}) to the podium at base price of ${formatCrores(currentPlayer.basePrice)}!`
+      );
+    }
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [currentPlayer?.id, activeRoom?.currentBid?.amount, activeRoom?.currentBid?.teamId]);
 
   const userTeam = teams.find((t) => t.id === user.selectedTeamId);
   const activeSquadTeam = teams.find((t) => t.id === activeSquadTeamId) || userTeam || teams[0];
@@ -473,6 +506,26 @@ export const LiveAuctionView: React.FC = () => {
                   </span>
                 )}
               </div>
+
+              {/* Gemini Live Commentary Ticker */}
+              {geminiCommentary && (
+                <div className="mt-3 p-3 rounded-2xl bg-[#090D1B]/90 border border-[#A78BFA]/30 flex items-center gap-2.5 shadow-md max-w-lg mx-auto">
+                  <div className="w-6 h-6 rounded-lg bg-[#A78BFA]/20 flex items-center justify-center text-[#A78BFA] shrink-0">
+                    <Radio className="w-3.5 h-3.5 animate-pulse" />
+                  </div>
+                  <div className="min-w-0 flex-1 text-left">
+                    <div className="flex items-center gap-1.5 mb-0.5">
+                      <span className="text-[9px] uppercase font-extrabold tracking-wider text-[#A78BFA]">
+                        Gemini Live Pundit
+                      </span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#20C997] animate-ping" />
+                    </div>
+                    <p className="text-[11px] text-[#F5F4FF] leading-snug italic truncate sm:whitespace-normal">
+                      "{geminiCommentary}"
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
