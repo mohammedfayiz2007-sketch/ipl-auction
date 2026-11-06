@@ -16,8 +16,6 @@ import {
   Play,
   Pause,
   SkipForward,
-  CheckCircle2,
-  XCircle,
   TrendingUp,
   Cpu,
   Volume2,
@@ -48,8 +46,6 @@ export const LiveAuctionView: React.FC = () => {
     soundMuted,
     toggleSound,
     placeBid,
-    sellCurrentPlayer,
-    markCurrentPlayerUnsold,
     skipToNextPlayer,
     pauseAuction,
     resumeAuction,
@@ -497,26 +493,6 @@ export const LiveAuctionView: React.FC = () => {
                 className="py-2.5 rounded-xl bg-[#090D1B] hover:bg-[#202944] text-[#00D6D0] font-mono font-bold text-xs border border-[#202944] hover:border-[#00D6D0] transition-colors cursor-pointer disabled:opacity-50"
               >
                 +₹1.00 Cr
-              </button>
-            </div>
-
-            {/* Auctioneer Hammer Actions (Champagne gold hammer SOLD) */}
-            <div className="pt-2 grid grid-cols-2 gap-2 border-t border-[#202944]">
-              <button
-                onClick={sellCurrentPlayer}
-                disabled={currentBidAmount === 0}
-                className="py-3 rounded-xl bg-[#E8BD68]/20 hover:bg-[#E8BD68] text-[#E8BD68] hover:text-[#090D1B] border border-[#E8BD68]/40 font-extrabold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-30 disabled:pointer-events-none shadow-md"
-              >
-                <CheckCircle2 className="w-4 h-4" />
-                <span>Hammer SOLD!</span>
-              </button>
-
-              <button
-                onClick={markCurrentPlayerUnsold}
-                className="py-3 rounded-xl bg-[#FF5C75]/20 hover:bg-[#FF5C75] text-[#FF5C75] hover:text-white border border-[#FF5C75]/40 font-extrabold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
-              >
-                <XCircle className="w-4 h-4" />
-                <span>Call UNSOLD</span>
               </button>
             </div>
           </div>
