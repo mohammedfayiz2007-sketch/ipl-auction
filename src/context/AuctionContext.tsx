@@ -423,21 +423,57 @@ export const AuctionProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   // Stable ordered pool of eligible cricketers for the auction sequence
+  // STRICT INVARIANT: Retained players must NEVER enter the live auction pool!
   const auctionPool = useMemo(() => {
+    // 1. Gather all retained player IDs across all possible retention sources
+    const allRetainedIds = new Set<string>();
+
+    teams.forEach((t) => {
+      (t.retainedPlayers || []).forEach((id) => allRetainedIds.add(id));
+    });
+
+    if (activeRoom?.roomTeams) {
+      activeRoom.roomTeams.forEach((t) => {
+        (t.retainedPlayers || []).forEach((id) => allRetainedIds.add(id));
+      });
+    }
+
+    if (activeRoom?.retentions) {
+      Object.values(activeRoom.retentions).forEach((r) => {
+        (r.retainedPlayerIds || []).forEach((id) => allRetainedIds.add(id));
+      });
+    }
+
+    players.forEach((p) => {
+      if (p.status === 'retained') {
+        allRetainedIds.add(p.id);
+      }
+    });
+
+    // 2. Candidate pool
+    let candidateList: Player[] = [];
     if (activeRoom?.eligibleAuctionPlayerIds && activeRoom.eligibleAuctionPlayerIds.length > 0) {
       const playerMap = new Map(players.map((p) => [p.id, p]));
-      return activeRoom.eligibleAuctionPlayerIds
+      candidateList = activeRoom.eligibleAuctionPlayerIds
         .map((id) => playerMap.get(id))
         .filter((p): p is Player => Boolean(p));
+    } else {
+      candidateList = players;
     }
-    const allRetained = new Set(teams.flatMap((t) => t.retainedPlayers));
-    return players.filter((p) => !allRetained.has(p.id));
-  }, [activeRoom?.eligibleAuctionPlayerIds, players, teams]);
 
-  const currentPlayer =
-    activeRoom && auctionPool.length > 0 && activeRoom.currentPlayerIndex < auctionPool.length
-      ? auctionPool[activeRoom.currentPlayerIndex]
-      : null;
+    // 3. Absolute enforcement: No retained players can appear in the auction pool
+    return candidateList.filter((p) => !allRetainedIds.has(p.id) && p.status !== 'retained');
+  }, [activeRoom?.eligibleAuctionPlayerIds, activeRoom?.retentions, activeRoom?.roomTeams, players, teams]);
+
+  const currentPlayer = useMemo(() => {
+    if (!activeRoom || auctionPool.length === 0) return null;
+    if (activeRoom.currentPlayerIndex < 0 || activeRoom.currentPlayerIndex >= auctionPool.length) {
+      return null;
+    }
+    const candidate = auctionPool[activeRoom.currentPlayerIndex];
+    if (!candidate || candidate.status === 'retained') return null;
+    return candidate;
+  }, [activeRoom, auctionPool]);
 
   const lastBidderTeam = activeRoom?.currentBid
     ? teams.find((t) => t.id === activeRoom.currentBid?.teamId) || null
@@ -689,6 +725,19 @@ export const AuctionProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const team = teams.find((t) => t.id === teamId);
     if (!team) return;
 
+    const allRetainedIds = new Set<string>();
+    teams.forEach((t) => (t.retainedPlayers || []).forEach((id) => allRetainedIds.add(id)));
+    (team.retainedPlayers || []).forEach((id) => allRetainedIds.add(id));
+    if (activeRoom.retentions) {
+      Object.values(activeRoom.retentions).forEach((r) => {
+        (r.retainedPlayerIds || []).forEach((id) => allRetainedIds.add(id));
+      });
+    }
+
+    const strictlyEligibleIds = players
+      .filter((p) => !allRetainedIds.has(p.id) && p.status !== 'retained')
+      .map((p) => p.id);
+
     setActiveRoom((prev) => {
       if (!prev) return null;
       const updatedRetentions = {
@@ -711,15 +760,28 @@ export const AuctionProvider: React.FC<{ children: React.ReactNode }> = ({ child
         ...prev,
         status: nextStatus,
         retentions: updatedRetentions,
+        eligibleAuctionPlayerIds: strictlyEligibleIds,
       };
     });
 
-    addActivity('retention', `${team.name} locked and confirmed retention decisions.`);
+    addActivity('retention', `${team.name} locked and confirmed retention decisions (${team.retainedPlayers.length} player(s) retained & excluded from auction).`);
   };
 
   // Auto-confirm bot retentions (Section 8)
   const autoConfirmBotRetentions = () => {
     if (!activeRoom) return;
+
+    const allRetainedIds = new Set<string>();
+    teams.forEach((t) => (t.retainedPlayers || []).forEach((id) => allRetainedIds.add(id)));
+    if (activeRoom.retentions) {
+      Object.values(activeRoom.retentions).forEach((r) => {
+        (r.retainedPlayerIds || []).forEach((id) => allRetainedIds.add(id));
+      });
+    }
+
+    const strictlyEligibleIds = players
+      .filter((p) => !allRetainedIds.has(p.id) && p.status !== 'retained')
+      .map((p) => p.id);
 
     setActiveRoom((prev) => {
       if (!prev) return null;
@@ -744,10 +806,11 @@ export const AuctionProvider: React.FC<{ children: React.ReactNode }> = ({ child
         ...prev,
         status: 'RETENTION_SUBMITTED',
         retentions: updatedRetentions,
+        eligibleAuctionPlayerIds: strictlyEligibleIds,
       };
     });
 
-    addActivity('retention', 'All franchise retention submissions have been locked and confirmed.');
+    addActivity('retention', 'All franchise retention submissions have been locked and confirmed. Retained players excluded from auction.');
   };
 
   // Finalize All Retentions & Generate Final Auction Pool (Sections 9 & 10)
@@ -762,9 +825,30 @@ export const AuctionProvider: React.FC<{ children: React.ReactNode }> = ({ child
       return { success: false, error: msg };
     }
 
-    // Compile all retained players
-    const allRetained = new Set(teams.flatMap((t) => t.retainedPlayers));
-    const eligibleIds = players.filter((p) => !allRetained.has(p.id)).map((p) => p.id);
+    // Compile comprehensive set of all retained player IDs across all sources
+    const allRetainedIds = new Set<string>();
+    teams.forEach((t) => (t.retainedPlayers || []).forEach((id) => allRetainedIds.add(id)));
+    if (activeRoom.retentions) {
+      Object.values(activeRoom.retentions).forEach((r) => {
+        (r.retainedPlayerIds || []).forEach((id) => allRetainedIds.add(id));
+      });
+    }
+    players.forEach((p) => {
+      if (p.status === 'retained') allRetainedIds.add(p.id);
+    });
+
+    // Strictly eligible non-retained players: ZERO retained players enter the auction
+    const eligibleIds = players
+      .filter((p) => !allRetainedIds.has(p.id) && p.status !== 'retained')
+      .map((p) => p.id);
+
+    const updatedPlayers = players.map((p) => {
+      if (allRetainedIds.has(p.id)) {
+        return { ...p, status: 'retained' as const };
+      }
+      return p.status === 'retained' ? { ...p, status: 'available' as const } : p;
+    });
+    setPlayers(updatedPlayers);
 
     setActiveRoom((prev) => {
       if (!prev) return null;
@@ -772,11 +856,12 @@ export const AuctionProvider: React.FC<{ children: React.ReactNode }> = ({ child
         ...prev,
         status: 'AUCTION_READY',
         eligibleAuctionPlayerIds: eligibleIds,
+        roomPlayers: updatedPlayers,
       };
     });
 
     setManualWorkflowStep(null);
-    addActivity('retention', `Retention finalized! ${eligibleIds.length} eligible players compiled for Live Auction.`);
+    addActivity('retention', `Retention finalized! ${eligibleIds.length} non-retained players compiled for Live Auction (${allRetainedIds.size} retained players excluded).`);
     return { success: true };
   };
 
@@ -796,11 +881,38 @@ export const AuctionProvider: React.FC<{ children: React.ReactNode }> = ({ child
       return { success: false, error: msg };
     }
 
+    // Compile comprehensive set of all retained player IDs
+    const allRetainedIds = new Set<string>();
+    teams.forEach((t) => (t.retainedPlayers || []).forEach((id) => allRetainedIds.add(id)));
+    if (activeRoom.retentions) {
+      Object.values(activeRoom.retentions).forEach((r) => {
+        (r.retainedPlayerIds || []).forEach((id) => allRetainedIds.add(id));
+      });
+    }
+    players.forEach((p) => {
+      if (p.status === 'retained') allRetainedIds.add(p.id);
+    });
+
+    // Strictly eligible players: NO RETAINED PLAYERS
+    const eligibleIds = players
+      .filter((p) => !allRetainedIds.has(p.id) && p.status !== 'retained')
+      .map((p) => p.id);
+
+    const updatedPlayers = players.map((p) => {
+      if (allRetainedIds.has(p.id)) {
+        return { ...p, status: 'retained' as const };
+      }
+      return p.status === 'retained' ? { ...p, status: 'available' as const } : p;
+    });
+    setPlayers(updatedPlayers);
+
     setActiveRoom((prev) => {
       if (!prev) return null;
       return {
         ...prev,
         status: 'LIVE_AUCTION',
+        eligibleAuctionPlayerIds: eligibleIds,
+        roomPlayers: updatedPlayers,
         currentPlayerIndex: 0,
         currentBid: null,
         bidHistory: [],
@@ -810,7 +922,7 @@ export const AuctionProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setTimerSecondsLeft(activeRoom.bidTimerSeconds);
     setIsTimerRunning(true);
     setManualWorkflowStep(null);
-    addActivity('bid', 'BCCI Auctioneer has opened the floor! Marquee player bidding is LIVE.');
+    addActivity('bid', `BCCI Auctioneer has opened the floor! ${eligibleIds.length} non-retained cricketers in auction pool (${allRetainedIds.size} retained players excluded). Live bidding is ACTIVE.`);
     return { success: true };
   };
 
@@ -1207,13 +1319,17 @@ export const AuctionProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setTeams(updatedTeams);
     setPlayers(updatedPlayers);
 
-    // Keep activeRoom in sync
+    // Keep activeRoom in sync and purge retained player immediately from eligible pool
     setActiveRoom((prev) => {
       if (!prev) return null;
+      const updatedEligible = prev.eligibleAuctionPlayerIds
+        ? prev.eligibleAuctionPlayerIds.filter((id) => id !== playerId)
+        : [];
       return {
         ...prev,
         roomTeams: updatedTeams,
         roomPlayers: updatedPlayers,
+        eligibleAuctionPlayerIds: updatedEligible,
       };
     });
 
@@ -1295,10 +1411,15 @@ export const AuctionProvider: React.FC<{ children: React.ReactNode }> = ({ child
       setPlayers(updatedPlayers);
       setActiveRoom((prev) => {
         if (!prev) return null;
+        const newlyRetainedSet = new Set(newlyRetainedMap.keys());
+        const updatedEligible = prev.eligibleAuctionPlayerIds
+          ? prev.eligibleAuctionPlayerIds.filter((id) => !newlyRetainedSet.has(id))
+          : [];
         return {
           ...prev,
           roomTeams: updatedTeams,
           roomPlayers: updatedPlayers,
+          eligibleAuctionPlayerIds: updatedEligible,
         };
       });
 
@@ -1349,10 +1470,14 @@ export const AuctionProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     setActiveRoom((prev) => {
       if (!prev) return null;
+      const updatedEligible = prev.eligibleAuctionPlayerIds
+        ? Array.from(new Set([...prev.eligibleAuctionPlayerIds, playerId]))
+        : [playerId];
       return {
         ...prev,
         roomTeams: updatedTeams,
         roomPlayers: updatedPlayers,
+        eligibleAuctionPlayerIds: updatedEligible,
       };
     });
 

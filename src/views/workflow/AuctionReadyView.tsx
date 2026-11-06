@@ -49,10 +49,20 @@ export const AuctionReadyView: React.FC<{ onStartLiveAuction: () => void }> = ({
   const allConfirmed = areAllTenRetentionsConfirmed();
   const pendingTeams = getPendingRetentionFranchises();
 
-  // Filter out any players who were retained
-  const allRetainedIds = new Set(
-    teams.flatMap((t) => t.retainedPlayers)
-  );
+  // Comprehensive set of all retained player IDs across all sources
+  const allRetainedIds = useMemo(() => {
+    const ids = new Set<string>();
+    teams.forEach((t) => (t.retainedPlayers || []).forEach((id) => ids.add(id)));
+    if (activeRoom?.retentions) {
+      Object.values(activeRoom.retentions).forEach((r) => {
+        (r.retainedPlayerIds || []).forEach((id) => ids.add(id));
+      });
+    }
+    players.forEach((p) => {
+      if (p.status === 'retained') ids.add(p.id);
+    });
+    return ids;
+  }, [teams, activeRoom?.retentions, players]);
 
   const eligiblePool = useMemo(() => {
     return players.filter((p) => {

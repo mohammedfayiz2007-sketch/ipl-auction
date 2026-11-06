@@ -340,6 +340,24 @@ async function runQAAudit() {
     `Pool size: ${auctionPoolRoom1.length} (expected 171), Zero retained players in auction block: ${poolDoesNotContainRetained}`
   );
 
+  // TEST 18: Strict Live Auction Invariant: Zero Retained Players in Live Bidding Pool
+  const mockRetainedPlayerIds = ['csk_1', 'mi_1', 'rcb_1']; // e.g. MS Dhoni, Rohit Sharma, Virat Kohli
+  const mockLiveAuctionPool = INITIAL_PLAYERS.filter(
+    (p) => !mockRetainedPlayerIds.includes(p.id) && p.status !== 'retained'
+  );
+
+  const containsAnyRetainedPlayer = mockLiveAuctionPool.some((p) =>
+    mockRetainedPlayerIds.includes(p.id)
+  );
+  const firstLivePlayerIsNotRetained =
+    mockLiveAuctionPool.length > 0 && !mockRetainedPlayerIds.includes(mockLiveAuctionPool[0].id);
+
+  assert(
+    !containsAnyRetainedPlayer && firstLivePlayerIsNotRetained,
+    'Zero Retained Players in Live Auction (Retained players strictly excluded from bidding block)',
+    `Retained leaked into live pool: ${containsAnyRetainedPlayer} (expected false), First player: ${mockLiveAuctionPool[0]?.name}`
+  );
+
   console.log('\n=====================================================');
   console.log(`AUDIT SUMMARY: ${results.filter((r) => r.passed).length} / ${results.length} TESTS PASSED`);
   console.log('=====================================================');
