@@ -6,7 +6,22 @@
 import React, { useState } from 'react';
 import { useAuction } from '../context/AuctionContext';
 import { TeamEmblem } from './TeamEmblem';
-import { Volume2, VolumeX, Sun, Moon, Radio, Menu, X, User, LogIn, LogOut, Check, Mail } from 'lucide-react';
+import {
+  Volume2,
+  VolumeX,
+  Sun,
+  Moon,
+  Radio,
+  Menu,
+  X,
+  User,
+  LogIn,
+  LogOut,
+  Check,
+  Mail,
+  Crown,
+  Sparkles,
+} from 'lucide-react';
 import { ViewTab } from '../types/auction';
 
 interface NavbarProps {
@@ -56,27 +71,34 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleMobileMenu, isMobileMenu
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-[#080D1A]/95 dark:bg-[#080D1A]/95 backdrop-blur border-b border-[#21304d] px-4 lg:px-8 py-3 transition-colors">
+    <header className="sticky top-0 z-40 w-full bg-white/90 dark:bg-[#090D1B]/95 backdrop-blur-md border-b border-[#E2E8F4] dark:border-[#202944] px-4 lg:px-8 py-3 transition-colors duration-200 shadow-sm">
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 lg:gap-8">
-        {/* Zone 1: Brand Wordmark (Single text element) */}
+        {/* Brand Wordmark & Luxury Crest */}
         <div className="flex items-center gap-3 shrink-0">
           <button
             onClick={() => setCurrentTab('landing')}
-            className="flex items-center gap-2.5 text-left group cursor-pointer focus-visible:outline-none"
+            className="flex items-center gap-3 text-left group cursor-pointer focus-visible:outline-none"
           >
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#F5B942] to-[#D19B20] flex items-center justify-center text-[#080D1A] font-extrabold text-sm shadow-md shadow-[#F5B942]/20">
-              🏏
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#A78BFA] via-[#7C3AED] to-[#171D35] p-0.5 shadow-md shadow-[#A78BFA]/20 group-hover:scale-105 transition-transform">
+              <div className="w-full h-full bg-[#090D1B] rounded-[10px] flex items-center justify-center text-[#E8BD68]">
+                <Crown className="w-5 h-5 text-[#E8BD68]" />
+              </div>
             </div>
             <div>
-              <span className="font-heading font-extrabold text-lg lg:text-xl tracking-tight text-white group-hover:text-[#F5B942] transition-colors whitespace-nowrap">
-                IPL ARENA <span className="text-[#F5B942]">2027</span>
+              <div className="flex items-center gap-1.5">
+                <span className="text-[10px] font-bold font-mono tracking-widest uppercase text-[#00D6D0] leading-none">
+                  OBSIDIAN ROYAL
+                </span>
+              </div>
+              <span className="font-heading font-black text-lg lg:text-xl tracking-tight text-[#0C1222] dark:text-[#F5F4FF] group-hover:text-[#A78BFA] transition-colors whitespace-nowrap block mt-0.5">
+                IPL ARENA <span className="text-[#E8BD68]">2027</span>
               </span>
             </div>
           </button>
         </div>
 
-        {/* Zone 2: 4-5 Clean Nav Links */}
-        <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
+        {/* Navigation Links */}
+        <nav className="hidden md:flex items-center gap-6 text-xs lg:text-sm font-semibold tracking-wide">
           {navLinks.map((link) => {
             const isActive = currentTab === link.tab;
             return (
@@ -85,13 +107,14 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleMobileMenu, isMobileMenu
                 onClick={() => setCurrentTab(link.tab)}
                 className={`flex items-center gap-1.5 transition-colors whitespace-nowrap shrink-0 py-1 border-b-2 ${
                   isActive
-                    ? 'border-[#F5B942] text-[#F5B942] font-semibold'
-                    : 'border-transparent text-slate-300 hover:text-white'
+                    ? 'border-[#7C3AED] dark:border-[#A78BFA] text-[#7C3AED] dark:text-[#A78BFA] font-bold'
+                    : 'border-transparent text-[#4A5568] dark:text-[#A5A9C3] hover:text-[#0C1222] dark:hover:text-white'
                 }`}
               >
                 {link.isLive && (
-                  <span className="inline-flex items-center justify-center text-xs text-[#FF5263] animate-pulse">
-                    <Radio className="w-3.5 h-3.5" />
+                  <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded-full bg-[#00D6D0]/15 text-[#00D6D0] text-[10px] font-black uppercase">
+                    <Radio className="w-3 h-3 animate-pulse" />
+                    <span>LIVE</span>
                   </span>
                 )}
                 <span>{link.label}</span>
@@ -100,19 +123,21 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleMobileMenu, isMobileMenu
           })}
         </nav>
 
-        {/* Zone 3: Primary Action & Utilities */}
+        {/* Actions & Utilities */}
         <div className="flex items-center gap-2 lg:gap-3 shrink-0">
           {/* User Franchise Quick Pill */}
           {userTeam && (
             <button
               onClick={() => setCurrentTab('teams')}
-              className="hidden sm:flex items-center gap-2 bg-[#10192B] border border-[#21304d] hover:border-[#F5B942]/50 px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer"
-              title="Click to switch franchise"
+              className="hidden sm:flex items-center gap-2 bg-[#F0F4FA] dark:bg-[#11182B] border border-[#D8DFEE] dark:border-[#202944] hover:border-[#A78BFA]/50 px-3 py-1.5 rounded-xl transition-all cursor-pointer shadow-sm"
+              title="Click to view or switch franchise"
             >
-              <TeamEmblem code={userTeam.code} size="sm" />
-              <div className="text-left text-xs leading-none">
-                <span className="block font-bold text-white">{userTeam.code}</span>
-                <span className="font-mono text-[11px] text-[#20C997] tabular-nums">
+              <TeamEmblem code={userTeam.code} size="xs" />
+              <div className="text-left leading-none">
+                <span className="block font-bold text-xs text-[#0C1222] dark:text-white">
+                  {userTeam.code}
+                </span>
+                <span className="font-mono text-[11px] font-bold text-[#20C997] tabular-nums">
                   ₹{remainingPurse} Cr
                 </span>
               </div>
@@ -123,20 +148,20 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleMobileMenu, isMobileMenu
           <button
             onClick={toggleSound}
             aria-label={soundMuted ? 'Unmute auction sound effects' : 'Mute auction sound effects'}
-            className="p-2 rounded-lg bg-[#10192B] border border-[#21304d] text-slate-300 hover:text-white hover:bg-[#172338] transition-colors cursor-pointer"
+            className="p-2 rounded-xl bg-[#F0F4FA] dark:bg-[#11182B] border border-[#D8DFEE] dark:border-[#202944] text-[#4A5568] dark:text-[#A5A9C3] hover:text-[#0C1222] dark:hover:text-white hover:bg-[#E2E8F4] dark:hover:bg-[#171D35] transition-colors cursor-pointer"
             title={soundMuted ? 'Sound Muted' : 'Sound Enabled'}
           >
-            {soundMuted ? <VolumeX className="w-4 h-4 text-[#FF5263]" /> : <Volume2 className="w-4 h-4 text-[#20C997]" />}
+            {soundMuted ? <VolumeX className="w-4 h-4 text-[#FF5C75]" /> : <Volume2 className="w-4 h-4 text-[#20C997]" />}
           </button>
 
-          {/* Theme Toggle */}
+          {/* Theme Toggle (Light / Obsidian Royal Dark) */}
           <button
             onClick={toggleTheme}
             aria-label="Toggle light and dark mode"
-            className="p-2 rounded-lg bg-[#10192B] border border-[#21304d] text-slate-300 hover:text-white hover:bg-[#172338] transition-colors cursor-pointer"
-            title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+            className="p-2 rounded-xl bg-[#F0F4FA] dark:bg-[#11182B] border border-[#D8DFEE] dark:border-[#202944] text-[#4A5568] dark:text-[#A5A9C3] hover:text-[#0C1222] dark:hover:text-white hover:bg-[#E2E8F4] dark:hover:bg-[#171D35] transition-colors cursor-pointer"
+            title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Obsidian Royal Dark Mode'}
           >
-            {theme === 'dark' ? <Sun className="w-4 h-4 text-[#F5B942]" /> : <Moon className="w-4 h-4 text-blue-400" />}
+            {theme === 'dark' ? <Sun className="w-4 h-4 text-[#E8BD68]" /> : <Moon className="w-4 h-4 text-[#7C3AED]" />}
           </button>
 
           {/* Gmail Workspace Dispatch Button */}
@@ -144,11 +169,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleMobileMenu, isMobileMenu
             <button
               onClick={() => setIsGmailModalOpen(true)}
               aria-label="Dispatch auction ledger via Gmail"
-              className="p-2 rounded-lg bg-[#10192B] border border-[#EA4335]/40 text-[#EA4335] hover:bg-[#EA4335]/15 transition-colors cursor-pointer flex items-center gap-1.5"
+              className="p-2 rounded-xl bg-[#EA4335]/10 border border-[#EA4335]/30 text-[#EA4335] hover:bg-[#EA4335]/20 transition-colors cursor-pointer flex items-center gap-1.5"
               title="Dispatch Official Report via Gmail (Google Workspace)"
             >
               <Mail className="w-4 h-4" />
-              <span className="hidden xl:inline text-xs font-bold text-slate-200">Gmail</span>
+              <span className="hidden xl:inline text-xs font-bold">Gmail</span>
             </button>
           )}
 
@@ -156,19 +181,23 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleMobileMenu, isMobileMenu
           <div className="relative">
             <button
               onClick={() => setIsAuthMenuOpen(!isAuthMenuOpen)}
-              className="p-2 rounded-lg bg-[#10192B] border border-[#21304d] text-slate-300 hover:text-white hover:bg-[#172338] transition-colors cursor-pointer flex items-center gap-1.5"
+              className="p-2 rounded-xl bg-[#F0F4FA] dark:bg-[#11182B] border border-[#D8DFEE] dark:border-[#202944] text-[#4A5568] dark:text-[#A5A9C3] hover:text-[#0C1222] dark:hover:text-white hover:bg-[#E2E8F4] dark:hover:bg-[#171D35] transition-colors cursor-pointer flex items-center gap-1.5"
               title={user.isAuthenticated ? `Signed in as ${user.name}` : 'Sign In'}
             >
-              <User className={`w-4 h-4 ${user.isAuthenticated ? 'text-[#20C997]' : 'text-slate-400'}`} />
+              <User className={`w-4 h-4 ${user.isAuthenticated ? 'text-[#20C997]' : 'text-[#A5A9C3]'}`} />
             </button>
 
             {/* Auth Dropdown */}
             {isAuthMenuOpen && (
-              <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-[#080D1A] border border-[#21304d] p-3 shadow-2xl z-50 animate-in fade-in zoom-in-95">
-                <div className="pb-2.5 mb-2.5 border-b border-[#21304d]">
-                  <span className="block text-xs font-bold text-white truncate">{user.name}</span>
-                  <span className="block text-[11px] text-slate-400 truncate">{user.email}</span>
-                  <div className="mt-1 flex items-center gap-1.5 text-[10px] text-[#20C997]">
+              <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-white dark:bg-[#171D35] border border-[#D8DFEE] dark:border-[#202944] p-3 shadow-2xl z-50 animate-in fade-in zoom-in-95">
+                <div className="pb-2.5 mb-2.5 border-b border-[#E2E8F4] dark:border-[#202944]">
+                  <span className="block text-xs font-bold text-[#0C1222] dark:text-white truncate">
+                    {user.name}
+                  </span>
+                  <span className="block text-[11px] text-[#4A5568] dark:text-[#A5A9C3] truncate">
+                    {user.email}
+                  </span>
+                  <div className="mt-1 flex items-center gap-1.5 text-[10px] text-[#20C997] font-semibold">
                     <Check className="w-3 h-3" />
                     <span>{user.isAuthenticated ? 'Session Verified' : 'Local Director Mode'}</span>
                   </div>
@@ -176,13 +205,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleMobileMenu, isMobileMenu
 
                 {/* Quick Gmail action */}
                 {activeRoom && (
-                  <div className="pb-2.5 mb-2.5 border-b border-[#21304d]">
+                  <div className="pb-2.5 mb-2.5 border-b border-[#E2E8F4] dark:border-[#202944]">
                     <button
                       onClick={() => {
                         setIsAuthMenuOpen(false);
                         setIsGmailModalOpen(true);
                       }}
-                      className="w-full py-1.5 px-3 rounded-xl bg-[#172338] hover:bg-[#1f2f4a] text-slate-200 text-xs font-semibold flex items-center gap-2 transition-colors cursor-pointer"
+                      className="w-full py-1.5 px-3 rounded-xl bg-[#F0F4FA] dark:bg-[#202944] hover:bg-[#E2E8F4] dark:hover:bg-[#2a365a] text-[#0C1222] dark:text-slate-200 text-xs font-semibold flex items-center gap-2 transition-colors cursor-pointer"
                     >
                       <Mail className="w-3.5 h-3.5 text-[#EA4335]" />
                       <span>Email Auction Ledger (Gmail)</span>
@@ -193,7 +222,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleMobileMenu, isMobileMenu
                 {user.isAuthenticated ? (
                   <button
                     onClick={handleSignOut}
-                    className="w-full py-1.5 px-3 rounded-xl bg-[#172338] hover:bg-[#FF5263] text-slate-300 hover:text-white text-xs font-semibold flex items-center gap-2 transition-colors cursor-pointer"
+                    className="w-full py-1.5 px-3 rounded-xl bg-[#F0F4FA] dark:bg-[#202944] hover:bg-[#FF5C75] text-[#4A5568] dark:text-[#A5A9C3] hover:text-white text-xs font-semibold flex items-center gap-2 transition-colors cursor-pointer"
                   >
                     <LogOut className="w-3.5 h-3.5" />
                     <span>Sign Out</span>
@@ -201,7 +230,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleMobileMenu, isMobileMenu
                 ) : (
                   <button
                     onClick={handleSignIn}
-                    className="w-full py-2 px-3 rounded-xl bg-[#F5B942] hover:bg-[#ffc95c] text-[#080D1A] text-xs font-extrabold flex items-center justify-center gap-2 transition-all cursor-pointer shadow"
+                    className="w-full py-2 px-3 rounded-xl bg-[#7C3AED] dark:bg-[#A78BFA] hover:bg-[#6D28D9] dark:hover:bg-[#9065F7] text-white dark:text-[#090D1B] text-xs font-extrabold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md"
                   >
                     <LogIn className="w-3.5 h-3.5" />
                     <span>Sign In with Google</span>
@@ -211,19 +240,19 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleMobileMenu, isMobileMenu
             )}
           </div>
 
-          {/* Enter Auction Arena CTA */}
+          {/* Enter Auction Arena CTA Button in Electric Violet */}
           <button
             onClick={() => setCurrentTab('auction')}
-            className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-[#080D1A] bg-[#F5B942] hover:bg-[#ffc95c] rounded-lg shadow-sm shadow-[#F5B942]/20 transition-all hover:scale-[1.02] active:scale-[0.98] whitespace-nowrap shrink-0 cursor-pointer"
+            className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 text-xs font-extrabold text-white dark:text-[#090D1B] bg-[#7C3AED] dark:bg-[#A78BFA] hover:bg-[#6D28D9] dark:hover:bg-[#9065F7] rounded-xl shadow-md shadow-[#A78BFA]/25 transition-all hover:scale-[1.02] active:scale-[0.98] whitespace-nowrap shrink-0 cursor-pointer"
           >
-            <Radio className="w-3.5 h-3.5 animate-pulse text-[#080D1A]" />
+            <Radio className="w-3.5 h-3.5 animate-pulse text-[#00D6D0] dark:text-[#090D1B]" />
             <span>Auction Arena</span>
           </button>
 
           {/* Mobile hamburger button */}
           <button
             onClick={onToggleMobileMenu}
-            className="md:hidden p-2 rounded-lg bg-[#10192B] border border-[#21304d] text-slate-300 hover:text-white"
+            className="md:hidden p-2 rounded-xl bg-[#F0F4FA] dark:bg-[#11182B] border border-[#D8DFEE] dark:border-[#202944] text-[#4A5568] dark:text-[#A5A9C3] hover:text-white"
             aria-label="Toggle navigation menu"
           >
             {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}

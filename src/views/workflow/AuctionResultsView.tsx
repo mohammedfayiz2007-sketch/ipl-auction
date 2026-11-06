@@ -192,48 +192,49 @@ export const AuctionResultsView: React.FC = () => {
   const goldenGavelTeam = goldenGavelPlayer ? teams.find((t) => t.id === goldenGavelPlayer.soldTo) : null;
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6 py-4">
+    <div className="max-w-6xl mx-auto space-y-6 py-4 text-[#F5F4FF]">
       {/* 1. GRAND CHAMPION / WINNER SHOWCASE BANNER */}
       {winner && (
-        <div className="p-6 sm:p-10 rounded-3xl bg-gradient-to-r from-[#10192B] via-[#1a2842] to-[#10192B] border-2 border-[#F5B942] shadow-2xl relative overflow-hidden">
-          <div className="absolute -top-16 -right-16 w-64 h-64 bg-[#F5B942]/15 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-16 -left-16 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="p-6 sm:p-10 rounded-3xl bg-gradient-to-r from-[#171D35] via-[#202944] to-[#171D35] border-2 border-[#E8BD68] shadow-2xl relative overflow-hidden">
+          <div className="absolute -top-16 -right-16 w-64 h-64 bg-[#E8BD68]/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-16 -left-16 w-64 h-64 bg-[#A78BFA]/10 rounded-full blur-3xl pointer-events-none" />
 
           <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex flex-col sm:flex-row items-center gap-5 text-center sm:text-left">
               <div className="relative">
                 <TeamEmblem code={winner.team.code} size="xl" className="shadow-2xl" />
-                <div className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-[#F5B942] text-[#080D1A] flex items-center justify-center shadow-lg font-black text-sm">
-                  <Crown className="w-5 h-5 text-[#080D1A]" />
+                <div className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-[#E8BD68] text-[#090D1B] flex items-center justify-center shadow-lg font-black text-sm">
+                  <Crown className="w-5 h-5 text-[#090D1B]" />
                 </div>
               </div>
 
               <div>
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F5B942]/20 border border-[#F5B942] text-[#F5B942] text-xs font-black tracking-widest uppercase mb-2">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#E8BD68]/20 border border-[#E8BD68] text-[#E8BD68] text-xs font-black tracking-widest uppercase mb-2">
                   <Trophy className="w-3.5 h-3.5" />
                   <span>2027 AUCTION WINNER & CHAMPIONS</span>
                 </div>
 
-                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white font-heading tracking-tight">
+                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#F5F4FF] font-heading tracking-tight">
                   {winner.team.name}
                 </h1>
 
-                <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-xl">
+                <p className="text-xs sm:text-sm text-[#A5A9C3] mt-1 max-w-xl">
                   Crowned #1 Champion Franchise with an exceptional squad rating of{' '}
-                  <strong className="text-[#F5B942] font-mono">{winner.scores.totalScore}/100</strong>, featuring{' '}
-                  <strong>{winner.squadSize} players</strong> and <strong>{winner.marqueeCount} marquee stars</strong>.
+                  <strong className="text-[#E8BD68] font-mono">{winner.scores.totalScore}/100</strong>, featuring{' '}
+                  <strong className="text-[#F5F4FF]">{winner.squadSize} players</strong> and{' '}
+                  <strong className="text-[#00D6D0]">{winner.marqueeCount} marquee stars</strong>.
                 </p>
 
                 {/* User Congratulations / Status */}
                 {isUserWinner ? (
-                  <div className="mt-3 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-[#20C997]/20 border border-[#20C997] text-[#20C997] text-xs font-bold">
+                  <div className="mt-3 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-[#20C997]/20 border border-[#20C997] text-[#20C997] text-xs font-bold shadow-sm">
                     <CheckCircle2 className="w-4 h-4" />
                     <span>CONGRATULATIONS! You led this franchise to victory as Director!</span>
                   </div>
                 ) : userRanking ? (
-                  <div className="mt-3 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-[#172338] border border-[#21304d] text-slate-300 text-xs">
+                  <div className="mt-3 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-[#090D1B] border border-[#202944] text-[#A5A9C3] text-xs">
                     <span>Your franchise ({userRanking.team.code}) finished</span>
-                    <strong className="text-[#F5B942] font-mono font-bold">
+                    <strong className="text-[#E8BD68] font-mono font-bold">
                       #{userRankIndex + 1} of 10
                     </strong>
                     <span>with a {userRanking.scores.totalScore}/100 squad rating.</span>
@@ -243,48 +244,48 @@ export const AuctionResultsView: React.FC = () => {
             </div>
 
             {/* Score Trophy Badge */}
-            <div className="p-5 rounded-3xl bg-[#080D1A]/90 border border-[#F5B942]/40 text-center min-w-[180px] shadow-xl">
-              <span className="text-[10px] text-slate-400 uppercase font-black tracking-wider block mb-1">
+            <div className="p-5 rounded-3xl bg-[#090D1B]/95 border border-[#E8BD68]/40 text-center min-w-[180px] shadow-2xl">
+              <span className="text-[10px] text-[#A5A9C3] uppercase font-black tracking-wider block mb-1">
                 Winning Score
               </span>
-              <div className="text-5xl font-black font-mono text-[#F5B942] tabular-nums tracking-tight">
+              <div className="text-5xl font-black font-mono text-[#E8BD68] tabular-nums tracking-tight">
                 {winner.scores.totalScore}
               </div>
-              <span className="text-[11px] text-slate-400 font-bold block mt-0.5">
+              <span className="text-[11px] text-[#A5A9C3] font-bold block mt-0.5">
                 out of 100
               </span>
 
-              <div className="mt-3 pt-2.5 border-t border-[#21304d] text-[10px] text-slate-400 space-y-0.5">
+              <div className="mt-3 pt-2.5 border-t border-[#202944] text-[10px] text-[#A5A9C3] space-y-0.5">
                 <div className="flex justify-between">
                   <span>Depth:</span>
-                  <strong className="text-white font-mono">{winner.scores.depthScore}/25</strong>
+                  <strong className="text-[#F5F4FF] font-mono">{winner.scores.depthScore}/25</strong>
                 </div>
                 <div className="flex justify-between">
                   <span>Balance:</span>
-                  <strong className="text-white font-mono">{winner.scores.balanceScore}/25</strong>
+                  <strong className="text-[#F5F4FF] font-mono">{winner.scores.balanceScore}/25</strong>
                 </div>
                 <div className="flex justify-between">
                   <span>Star Power:</span>
-                  <strong className="text-white font-mono">{winner.scores.starScore}/30</strong>
+                  <strong className="text-[#F5F4FF] font-mono">{winner.scores.starScore}/30</strong>
                 </div>
                 <div className="flex justify-between">
                   <span>Purse Mgmt:</span>
-                  <strong className="text-white font-mono">{winner.scores.efficiencyScore}/20</strong>
+                  <strong className="text-[#F5F4FF] font-mono">{winner.scores.efficiencyScore}/20</strong>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Action Buttons */}
-          <div className="mt-6 pt-5 border-t border-[#21304d] flex flex-wrap items-center justify-between gap-3">
-            <span className="text-xs text-slate-400">
-              Official BCCI certified auction results compiled for all 10 franchises.
+          <div className="mt-6 pt-5 border-t border-[#202944] flex flex-wrap items-center justify-between gap-3">
+            <span className="text-xs text-[#A5A9C3]">
+              Official BCCI certified auction ledger compiled for all 10 franchises.
             </span>
 
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setIsGmailModalOpen(true)}
-                className="px-5 py-2.5 rounded-xl bg-[#EA4335] hover:bg-[#d6382b] text-white font-extrabold text-xs shadow-lg shadow-[#EA4335]/25 transition-all cursor-pointer flex items-center gap-2"
+                className="px-5 py-2.5 rounded-xl bg-[#FF5C75] hover:bg-[#e04860] text-white font-extrabold text-xs shadow-lg shadow-[#FF5C75]/25 transition-all cursor-pointer flex items-center gap-2"
               >
                 <Mail className="w-4 h-4" />
                 <span>Email Certified Ledger via Gmail</span>
@@ -292,7 +293,7 @@ export const AuctionResultsView: React.FC = () => {
 
               <button
                 onClick={resetAuctionData}
-                className="px-5 py-2.5 rounded-xl bg-[#F5B942] hover:bg-[#ffc95c] text-[#080D1A] font-extrabold text-xs shadow-md transition-all cursor-pointer flex items-center gap-1.5"
+                className="px-5 py-2.5 rounded-xl bg-[#A78BFA] hover:bg-[#b8a1fb] text-[#090D1B] font-extrabold text-xs shadow-md transition-all cursor-pointer flex items-center gap-1.5"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 <span>Start New Mega Auction Cycle</span>
@@ -308,15 +309,15 @@ export const AuctionResultsView: React.FC = () => {
         {runnerUp && (
           <div
             onClick={() => setSelectedFranchiseId(runnerUp.team.id)}
-            className="p-5 rounded-3xl bg-[#10192B] border border-slate-600/50 hover:border-slate-400 transition-all cursor-pointer relative flex flex-col justify-between shadow-lg order-2 md:order-1"
+            className="p-5 rounded-3xl bg-[#171D35] border border-[#202944] hover:border-[#A5A9C3] transition-all cursor-pointer relative flex flex-col justify-between shadow-xl order-2 md:order-1"
           >
             <div>
               <div className="flex items-center justify-between mb-3">
-                <span className="px-3 py-1 rounded-full bg-slate-500/20 text-slate-300 font-mono font-black text-xs flex items-center gap-1.5">
-                  <Medal className="w-3.5 h-3.5 text-slate-300" />
+                <span className="px-3 py-1 rounded-full bg-[#A5A9C3]/20 text-[#A5A9C3] font-mono font-black text-xs flex items-center gap-1.5">
+                  <Medal className="w-3.5 h-3.5 text-[#A5A9C3]" />
                   <span>#2 RUNNER-UP</span>
                 </span>
-                <span className="font-mono font-black text-xl text-slate-200">
+                <span className="font-mono font-black text-xl text-[#A5A9C3]">
                   {runnerUp.scores.totalScore} pts
                 </span>
               </div>
@@ -324,19 +325,19 @@ export const AuctionResultsView: React.FC = () => {
               <div className="flex items-center gap-3 mb-3">
                 <TeamEmblem code={runnerUp.team.code} size="lg" />
                 <div>
-                  <h3 className="font-extrabold text-white text-base font-heading">
+                  <h3 className="font-extrabold text-[#F5F4FF] text-base font-heading">
                     {runnerUp.team.name}
                   </h3>
-                  <span className="text-xs text-slate-400 font-mono">
+                  <span className="text-xs text-[#A5A9C3] font-mono">
                     Squad: {runnerUp.squadSize}/25 · Spent: ₹{runnerUp.totalSpent.toFixed(2)} Cr
                   </span>
                 </div>
               </div>
             </div>
 
-            <div className="pt-3 border-t border-[#21304d] flex items-center justify-between text-xs text-slate-400">
+            <div className="pt-3 border-t border-[#202944] flex items-center justify-between text-xs text-[#A5A9C3]">
               <span>Overseas: {runnerUp.overseasCount}/8</span>
-              <span className="text-[#F5B942] font-semibold hover:underline">Inspect Squad →</span>
+              <span className="text-[#A78BFA] font-semibold hover:underline">Inspect Squad →</span>
             </div>
           </div>
         )}
@@ -345,15 +346,15 @@ export const AuctionResultsView: React.FC = () => {
         {winner && (
           <div
             onClick={() => setSelectedFranchiseId(winner.team.id)}
-            className="p-6 rounded-3xl bg-gradient-to-b from-[#1c2c47] to-[#10192B] border-2 border-[#F5B942] ring-2 ring-[#F5B942]/30 shadow-2xl relative flex flex-col justify-between order-1 md:order-2 md:-translate-y-2 cursor-pointer"
+            className="p-6 rounded-3xl bg-gradient-to-b from-[#202944] to-[#171D35] border-2 border-[#E8BD68] ring-2 ring-[#E8BD68]/30 shadow-2xl relative flex flex-col justify-between order-1 md:order-2 md:-translate-y-2 cursor-pointer"
           >
             <div>
               <div className="flex items-center justify-between mb-3">
-                <span className="px-3 py-1 rounded-full bg-[#F5B942] text-[#080D1A] font-black text-xs flex items-center gap-1.5 shadow-md">
-                  <Crown className="w-4 h-4 text-[#080D1A]" />
+                <span className="px-3 py-1 rounded-full bg-[#E8BD68] text-[#090D1B] font-black text-xs flex items-center gap-1.5 shadow-md">
+                  <Crown className="w-4 h-4 text-[#090D1B]" />
                   <span>#1 AUCTION CHAMPION</span>
                 </span>
-                <span className="font-mono font-black text-2xl text-[#F5B942]">
+                <span className="font-mono font-black text-2xl text-[#E8BD68]">
                   {winner.scores.totalScore} pts
                 </span>
               </div>
@@ -361,22 +362,22 @@ export const AuctionResultsView: React.FC = () => {
               <div className="flex items-center gap-3.5 mb-4">
                 <TeamEmblem code={winner.team.code} size="xl" />
                 <div>
-                  <h3 className="font-black text-white text-lg font-heading">
+                  <h3 className="font-black text-[#F5F4FF] text-lg font-heading">
                     {winner.team.name}
                   </h3>
-                  <span className="text-xs text-slate-300 font-mono">
+                  <span className="text-xs text-[#A5A9C3] font-mono">
                     Squad: {winner.squadSize}/25 · {winner.marqueeCount} Marquee Superstars
                   </span>
-                  <span className="block text-[11px] text-[#20C997] font-mono mt-0.5">
+                  <span className="block text-[11px] text-[#00D6D0] font-mono mt-0.5">
                     Remaining: ₹{winner.remainingPurse.toFixed(2)} Cr
                   </span>
                 </div>
               </div>
             </div>
 
-            <div className="pt-3 border-t border-[#F5B942]/30 flex items-center justify-between text-xs">
-              <span className="text-slate-300">Spent: ₹{winner.totalSpent.toFixed(2)} Cr</span>
-              <span className="text-[#F5B942] font-black hover:underline">View Champion Squad →</span>
+            <div className="pt-3 border-t border-[#E8BD68]/30 flex items-center justify-between text-xs">
+              <span className="text-[#A5A9C3]">Spent: ₹{winner.totalSpent.toFixed(2)} Cr</span>
+              <span className="text-[#E8BD68] font-black hover:underline">View Champion Squad →</span>
             </div>
           </div>
         )}
@@ -385,7 +386,7 @@ export const AuctionResultsView: React.FC = () => {
         {thirdPlace && (
           <div
             onClick={() => setSelectedFranchiseId(thirdPlace.team.id)}
-            className="p-5 rounded-3xl bg-[#10192B] border border-amber-700/40 hover:border-amber-600 transition-all cursor-pointer relative flex flex-col justify-between shadow-lg order-3"
+            className="p-5 rounded-3xl bg-[#171D35] border border-[#202944] hover:border-[#CD7F32] transition-all cursor-pointer relative flex flex-col justify-between shadow-xl order-3"
           >
             <div>
               <div className="flex items-center justify-between mb-3">
@@ -401,19 +402,19 @@ export const AuctionResultsView: React.FC = () => {
               <div className="flex items-center gap-3 mb-3">
                 <TeamEmblem code={thirdPlace.team.code} size="lg" />
                 <div>
-                  <h3 className="font-extrabold text-white text-base font-heading">
+                  <h3 className="font-extrabold text-[#F5F4FF] text-base font-heading">
                     {thirdPlace.team.name}
                   </h3>
-                  <span className="text-xs text-slate-400 font-mono">
+                  <span className="text-xs text-[#A5A9C3] font-mono">
                     Squad: {thirdPlace.squadSize}/25 · Spent: ₹{thirdPlace.totalSpent.toFixed(2)} Cr
                   </span>
                 </div>
               </div>
             </div>
 
-            <div className="pt-3 border-t border-[#21304d] flex items-center justify-between text-xs text-slate-400">
+            <div className="pt-3 border-t border-[#202944] flex items-center justify-between text-xs text-[#A5A9C3]">
               <span>Overseas: {thirdPlace.overseasCount}/8</span>
-              <span className="text-[#F5B942] font-semibold hover:underline">Inspect Squad →</span>
+              <span className="text-[#A78BFA] font-semibold hover:underline">Inspect Squad →</span>
             </div>
           </div>
         )}
@@ -421,9 +422,9 @@ export const AuctionResultsView: React.FC = () => {
 
       {/* 3. SPECIAL AUCTION AWARDS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-        {/* Golden Gavel Award (Most Expensive Buy) */}
-        <div className="p-4 rounded-2xl bg-[#10192B] border border-[#21304d] space-y-2">
-          <div className="flex items-center gap-2 text-xs font-bold text-[#F5B942]">
+        {/* Golden Gavel Award (Record Buy) */}
+        <div className="p-4 rounded-2xl bg-[#171D35] border border-[#202944] space-y-2 shadow-md">
+          <div className="flex items-center gap-2 text-xs font-bold text-[#E8BD68]">
             <Award className="w-4 h-4" />
             <span>GOLDEN GAVEL (RECORD BUY)</span>
           </div>
@@ -434,21 +435,21 @@ export const AuctionResultsView: React.FC = () => {
             >
               <PlayerAvatar player={goldenGavelPlayer} size="sm" showRoleBadge />
               <div className="min-w-0">
-                <span className="block text-xs font-bold text-white truncate group-hover:text-[#F5B942]">
+                <span className="block text-xs font-bold text-[#F5F4FF] truncate group-hover:text-[#A78BFA]">
                   {goldenGavelPlayer.name}
                 </span>
-                <span className="text-sm font-extrabold font-mono text-[#F5B942] block">
+                <span className="text-sm font-extrabold font-mono text-[#E8BD68] block">
                   {formatCrores(goldenGavelPlayer.soldPrice || 0)}
                 </span>
-                <span className="text-[10px] text-slate-400 flex items-center gap-1">
+                <span className="text-[10px] text-[#A5A9C3] flex items-center gap-1">
                   <span>Sold to</span>
                   {goldenGavelTeam && <TeamEmblem code={goldenGavelTeam.code} size="xs" />}
-                  <strong className="text-slate-200">{goldenGavelTeam?.code || 'N/A'}</strong>
+                  <strong className="text-[#F5F4FF]">{goldenGavelTeam?.code || 'N/A'}</strong>
                 </span>
               </div>
             </div>
           ) : (
-            <span className="text-xs text-slate-500 italic">No auction buys recorded yet</span>
+            <span className="text-xs text-[#A5A9C3] italic">No auction buys recorded yet</span>
           )}
         </div>
 
@@ -456,8 +457,8 @@ export const AuctionResultsView: React.FC = () => {
         {(() => {
           const bestBatting = [...rankedTeams].sort((a, b) => b.totalRuns - a.totalRuns)[0];
           return (
-            <div className="p-4 rounded-2xl bg-[#10192B] border border-[#21304d] space-y-2">
-              <div className="flex items-center gap-2 text-xs font-bold text-amber-400">
+            <div className="p-4 rounded-2xl bg-[#171D35] border border-[#202944] space-y-2 shadow-md">
+              <div className="flex items-center gap-2 text-xs font-bold text-[#FFB84D]">
                 <Flame className="w-4 h-4" />
                 <span>BATTING POWERHOUSE</span>
               </div>
@@ -468,13 +469,13 @@ export const AuctionResultsView: React.FC = () => {
                 >
                   <TeamEmblem code={bestBatting.team.code} size="md" />
                   <div>
-                    <span className="block text-xs font-bold text-white group-hover:text-[#F5B942]">
+                    <span className="block text-xs font-bold text-[#F5F4FF] group-hover:text-[#A78BFA]">
                       {bestBatting.team.name}
                     </span>
-                    <span className="text-xs font-mono text-amber-300 font-bold block">
+                    <span className="text-xs font-mono text-[#FFB84D] font-bold block">
                       {bestBatting.roleCounts.batters} Batters · {bestBatting.totalRuns} Career Runs
                     </span>
-                    <span className="text-[10px] text-slate-400">Highest aggregate runs in pool</span>
+                    <span className="text-[10px] text-[#A5A9C3]">Highest aggregate runs in pool</span>
                   </div>
                 </div>
               )}
@@ -486,8 +487,8 @@ export const AuctionResultsView: React.FC = () => {
         {(() => {
           const bestBowling = [...rankedTeams].sort((a, b) => b.totalWickets - a.totalWickets)[0];
           return (
-            <div className="p-4 rounded-2xl bg-[#10192B] border border-[#21304d] space-y-2">
-              <div className="flex items-center gap-2 text-xs font-bold text-blue-400">
+            <div className="p-4 rounded-2xl bg-[#171D35] border border-[#202944] space-y-2 shadow-md">
+              <div className="flex items-center gap-2 text-xs font-bold text-[#00D6D0]">
                 <Target className="w-4 h-4" />
                 <span>BOWLING FORTRESS</span>
               </div>
@@ -498,13 +499,13 @@ export const AuctionResultsView: React.FC = () => {
                 >
                   <TeamEmblem code={bestBowling.team.code} size="md" />
                   <div>
-                    <span className="block text-xs font-bold text-white group-hover:text-[#F5B942]">
+                    <span className="block text-xs font-bold text-[#F5F4FF] group-hover:text-[#A78BFA]">
                       {bestBowling.team.name}
                     </span>
-                    <span className="text-xs font-mono text-blue-300 font-bold block">
-                      {bestBowling.roleCounts.bowlers} Bowlers · {bestBowling.totalWickets} Career Wickets
+                    <span className="text-xs font-mono text-[#00D6D0] font-bold block">
+                      {bestBowling.roleCounts.bowlers} Bowlers · {bestBowling.totalWickets} Wickets
                     </span>
-                    <span className="text-[10px] text-slate-400">Most lethal bowling unit</span>
+                    <span className="text-[10px] text-[#A5A9C3]">Most lethal bowling unit</span>
                   </div>
                 </div>
               )}
@@ -518,7 +519,7 @@ export const AuctionResultsView: React.FC = () => {
             .filter((rt) => rt.squadSize >= 18)
             .sort((a, b) => b.remainingPurse - a.remainingPurse)[0] || rankedTeams[0];
           return (
-            <div className="p-4 rounded-2xl bg-[#10192B] border border-[#21304d] space-y-2">
+            <div className="p-4 rounded-2xl bg-[#171D35] border border-[#202944] space-y-2 shadow-md">
               <div className="flex items-center gap-2 text-xs font-bold text-[#20C997]">
                 <Zap className="w-4 h-4" />
                 <span>MONEYBALL EFFICIENCY</span>
@@ -530,13 +531,13 @@ export const AuctionResultsView: React.FC = () => {
                 >
                   <TeamEmblem code={bestPurse.team.code} size="md" />
                   <div>
-                    <span className="block text-xs font-bold text-white group-hover:text-[#F5B942]">
+                    <span className="block text-xs font-bold text-[#F5F4FF] group-hover:text-[#A78BFA]">
                       {bestPurse.team.name}
                     </span>
                     <span className="text-xs font-mono text-[#20C997] font-bold block">
                       ₹{bestPurse.remainingPurse.toFixed(2)} Cr Reserve
                     </span>
-                    <span className="text-[10px] text-slate-400">
+                    <span className="text-[10px] text-[#A5A9C3]">
                       Full {bestPurse.squadSize} players squad with savings
                     </span>
                   </div>
@@ -548,24 +549,24 @@ export const AuctionResultsView: React.FC = () => {
       </div>
 
       {/* 4. COMPLETE 10-FRANCHISE STANDINGS TABLE */}
-      <div className="p-6 rounded-3xl bg-[#10192B] border border-[#21304d] space-y-4">
+      <div className="p-6 rounded-3xl bg-[#171D35] border border-[#202944] space-y-4 shadow-xl">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-base font-extrabold text-white font-heading flex items-center gap-2">
-              <Trophy className="w-4 h-4 text-[#F5B942]" />
+            <h2 className="text-base font-extrabold text-[#F5F4FF] font-heading flex items-center gap-2">
+              <Trophy className="w-4 h-4 text-[#E8BD68]" />
               <span>Official 2027 Mega Auction Leaderboard & Standings</span>
             </h2>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-[#A5A9C3] mt-0.5">
               Comprehensive ranking based on squad completeness (25 pts), balance (25 pts), star quality (30 pts), and financial management (20 pts).
             </p>
           </div>
-          <span className="text-xs font-mono text-slate-400">10 Franchises</span>
+          <span className="text-xs font-mono text-[#A5A9C3]">10 Franchises</span>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full text-xs text-left">
             <thead>
-              <tr className="border-b border-[#21304d] text-slate-400 font-bold uppercase tracking-wider">
+              <tr className="border-b border-[#202944] text-[#A5A9C3] font-bold uppercase tracking-wider">
                 <th className="pb-3 pl-2">Rank & Franchise</th>
                 <th className="pb-3 text-center">Score</th>
                 <th className="pb-3 text-center">Squad</th>
@@ -576,7 +577,7 @@ export const AuctionResultsView: React.FC = () => {
                 <th className="pb-3 text-right pr-2">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#21304d]/60">
+            <tbody className="divide-y divide-[#202944]">
               {rankedTeams.map((entry, idx) => {
                 const isSelected = selectedFranchiseId === entry.team.id;
                 const isUser = user.selectedTeamId === entry.team.id;
@@ -584,21 +585,21 @@ export const AuctionResultsView: React.FC = () => {
                 return (
                   <tr
                     key={entry.team.id}
-                    className={`transition-colors hover:bg-[#172338]/60 ${
-                      isSelected ? 'bg-[#172338]' : ''
-                    } ${idx === 0 ? 'bg-[#F5B942]/5' : ''}`}
+                    className={`transition-colors hover:bg-[#202944]/50 ${
+                      isSelected ? 'bg-[#202944]' : ''
+                    } ${idx === 0 ? 'bg-[#E8BD68]/5' : ''}`}
                   >
                     <td className="py-3 pl-2">
                       <div className="flex items-center gap-2.5">
                         <span
                           className={`w-6 h-6 rounded-full font-mono font-black text-xs flex items-center justify-center ${
                             idx === 0
-                              ? 'bg-[#F5B942] text-[#080D1A]'
+                              ? 'bg-[#E8BD68] text-[#090D1B]'
                               : idx === 1
-                              ? 'bg-slate-300 text-[#080D1A]'
+                              ? 'bg-[#A5A9C3] text-[#090D1B]'
                               : idx === 2
                               ? 'bg-amber-700 text-white'
-                              : 'bg-[#080D1A] text-slate-400 border border-[#21304d]'
+                              : 'bg-[#090D1B] text-[#A5A9C3] border border-[#202944]'
                           }`}
                         >
                           {idx + 1}
@@ -606,19 +607,19 @@ export const AuctionResultsView: React.FC = () => {
                         <TeamEmblem code={entry.team.code} size="sm" />
                         <div>
                           <div className="flex items-center gap-1.5">
-                            <span className="font-extrabold text-white">{entry.team.name}</span>
+                            <span className="font-extrabold text-[#F5F4FF]">{entry.team.name}</span>
                             {isUser && (
-                              <span className="text-[9px] bg-[#F5B942] text-[#080D1A] font-black px-1.5 py-0.2 rounded">
+                              <span className="text-[9px] bg-[#A78BFA] text-[#090D1B] font-black px-1.5 py-0.2 rounded">
                                 YOU
                               </span>
                             )}
                             {idx === 0 && (
-                              <span className="text-[9px] bg-[#F5B942]/20 border border-[#F5B942] text-[#F5B942] font-black px-1.5 py-0.2 rounded uppercase">
+                              <span className="text-[9px] bg-[#E8BD68]/20 border border-[#E8BD68] text-[#E8BD68] font-black px-1.5 py-0.2 rounded uppercase">
                                 WINNER
                               </span>
                             )}
                           </div>
-                          <span className="text-[10px] text-slate-400 font-mono">
+                          <span className="text-[10px] text-[#A5A9C3] font-mono">
                             {entry.team.code} · {entry.team.city}
                           </span>
                         </div>
@@ -626,39 +627,39 @@ export const AuctionResultsView: React.FC = () => {
                     </td>
 
                     <td className="py-3 text-center">
-                      <span className="font-black font-mono text-sm text-[#F5B942] tabular-nums">
+                      <span className="font-black font-mono text-sm text-[#E8BD68] tabular-nums">
                         {entry.scores.totalScore}
                       </span>
-                      <span className="text-[10px] text-slate-500 block">/ 100</span>
+                      <span className="text-[10px] text-[#A5A9C3] block">/ 100</span>
                     </td>
 
-                    <td className="py-3 text-center font-mono font-bold text-white">
+                    <td className="py-3 text-center font-mono font-bold text-[#F5F4FF]">
                       {entry.squadSize} / 25
                     </td>
 
-                    <td className="py-3 text-center font-mono text-blue-400 font-bold">
+                    <td className="py-3 text-center font-mono text-[#00D6D0] font-bold">
                       {entry.overseasCount} / 8
                     </td>
 
-                    <td className="py-3 text-center font-mono text-[11px] text-slate-300">
+                    <td className="py-3 text-center font-mono text-[11px] text-[#A5A9C3]">
                       {entry.roleCounts.batters}B · {entry.roleCounts.bowlers}W · {entry.roleCounts.allRounders}AR · {entry.roleCounts.wicketkeepers}WK
                     </td>
 
-                    <td className="py-3 text-right font-mono text-slate-200">
+                    <td className="py-3 text-right font-mono text-[#F5F4FF]">
                       ₹{entry.totalSpent.toFixed(2)} Cr
                     </td>
 
-                    <td className="py-3 text-right font-mono font-bold text-[#20C997] tabular-nums">
+                    <td className="py-3 text-right font-mono font-bold text-[#00D6D0] tabular-nums">
                       ₹{entry.remainingPurse.toFixed(2)} Cr
                     </td>
 
                     <td className="py-3 text-right pr-2">
                       <button
                         onClick={() => setSelectedFranchiseId(entry.team.id)}
-                        className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-colors cursor-pointer ${
+                        className={`px-3 py-1 rounded-lg text-[11px] font-bold transition-colors cursor-pointer ${
                           isSelected
-                            ? 'bg-[#F5B942] text-[#080D1A]'
-                            : 'bg-[#080D1A] hover:bg-[#1f2f4a] text-slate-300 border border-[#21304d]'
+                            ? 'bg-[#A78BFA] text-[#090D1B]'
+                            : 'bg-[#090D1B] hover:bg-[#202944] text-[#A5A9C3] hover:text-[#F5F4FF] border border-[#202944]'
                         }`}
                       >
                         Inspect
@@ -673,9 +674,9 @@ export const AuctionResultsView: React.FC = () => {
       </div>
 
       {/* 5. TOP 5 EXPENSIVE SIGNINGS */}
-      <div className="p-6 rounded-3xl bg-[#10192B] border border-[#21304d]">
-        <h2 className="text-sm font-bold uppercase tracking-wider text-white font-heading mb-4 flex items-center gap-2">
-          <Award className="w-4 h-4 text-[#F5B942]" />
+      <div className="p-6 rounded-3xl bg-[#171D35] border border-[#202944] shadow-xl">
+        <h2 className="text-sm font-bold uppercase tracking-wider text-[#F5F4FF] font-heading mb-4 flex items-center gap-2">
+          <Award className="w-4 h-4 text-[#E8BD68]" />
           <span>Top 5 Record Acquisitions of the 2027 Mega Auction</span>
         </h2>
 
@@ -686,18 +687,18 @@ export const AuctionResultsView: React.FC = () => {
               <div
                 key={player.id}
                 onClick={() => setInspectedPlayer(player)}
-                className="p-3.5 rounded-2xl bg-[#080D1A] border border-[#21304d] hover:border-[#F5B942]/50 transition-colors cursor-pointer text-center relative group"
+                className="p-3.5 rounded-2xl bg-[#090D1B] border border-[#202944] hover:border-[#A78BFA]/50 transition-colors cursor-pointer text-center relative group"
               >
-                <div className="absolute top-2 left-2 w-5 h-5 rounded-full bg-[#F5B942] text-[#080D1A] font-extrabold text-[10px] flex items-center justify-center font-mono">
+                <div className="absolute top-2 left-2 w-5 h-5 rounded-full bg-[#E8BD68] text-[#090D1B] font-extrabold text-[10px] flex items-center justify-center font-mono">
                   #{idx + 1}
                 </div>
                 <PlayerAvatar player={player} size="md" className="mx-auto mb-2" />
-                <h3 className="text-xs font-bold text-white truncate group-hover:text-[#F5B942]">
+                <h3 className="text-xs font-bold text-[#F5F4FF] truncate group-hover:text-[#A78BFA]">
                   {player.name}
                 </h3>
                 <div className="mt-2 flex items-center justify-center gap-1.5">
-                  {team && <TeamEmblem code={team.code} size="sm" />}
-                  <span className="text-xs font-mono font-bold text-[#F5B942] tabular-nums">
+                  {team && <TeamEmblem code={team.code} size="xs" />}
+                  <span className="text-xs font-mono font-bold text-[#E8BD68] tabular-nums">
                     {formatCrores(player.soldPrice || 0)}
                   </span>
                 </div>
@@ -708,14 +709,14 @@ export const AuctionResultsView: React.FC = () => {
       </div>
 
       {/* 6. COMPLETE SQUAD ROSTER INSPECTOR */}
-      <div className="p-6 rounded-3xl bg-[#10192B] border border-[#21304d] space-y-6">
+      <div className="p-6 rounded-3xl bg-[#171D35] border border-[#202944] space-y-6 shadow-xl">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h2 className="text-lg font-extrabold text-white font-heading flex items-center gap-2">
-              <Shield className="w-5 h-5 text-[#F5B942]" />
+            <h2 className="text-lg font-extrabold text-[#F5F4FF] font-heading flex items-center gap-2">
+              <Shield className="w-5 h-5 text-[#E8BD68]" />
               <span>Franchise Squad Roster Inspector</span>
             </h2>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-[#A5A9C3] mt-0.5">
               Review full player details, roles, base prices, and final prices for any franchise.
             </p>
           </div>
@@ -728,8 +729,8 @@ export const AuctionResultsView: React.FC = () => {
                 onClick={() => setSelectedFranchiseId(t.id)}
                 className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                   selectedFranchiseId === t.id
-                    ? 'bg-[#F5B942] text-[#080D1A] shadow-md font-extrabold'
-                    : 'bg-[#080D1A] text-slate-400 hover:text-white border border-[#21304d]'
+                    ? 'bg-[#A78BFA] text-[#090D1B] shadow-md font-extrabold'
+                    : 'bg-[#090D1B] text-[#A5A9C3] hover:text-[#F5F4FF] border border-[#202944]'
                 }`}
               >
                 {t.code}
@@ -739,38 +740,38 @@ export const AuctionResultsView: React.FC = () => {
         </div>
 
         {/* Selected Franchise Summary Strip */}
-        <div className="p-4 rounded-2xl bg-[#080D1A] border border-[#21304d] flex flex-wrap items-center justify-between gap-4">
+        <div className="p-4 rounded-2xl bg-[#090D1B] border border-[#202944] flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <TeamEmblem code={selectedTeamData.team.code} size="md" />
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-base font-bold text-white font-heading">
+                <h3 className="text-base font-bold text-[#F5F4FF] font-heading">
                   {selectedTeamData.team.name}
                 </h3>
                 {selectedTeamData.team.id === winner?.team.id && (
-                  <span className="text-[9px] bg-[#F5B942] text-[#080D1A] font-black px-1.5 py-0.2 rounded uppercase">
+                  <span className="text-[9px] bg-[#E8BD68] text-[#090D1B] font-black px-1.5 py-0.2 rounded uppercase">
                     🏆 2027 WINNER
                   </span>
                 )}
               </div>
-              <span className="text-xs text-slate-400">
-                Squad: <strong className="text-white">{selectedTeamData.squadSize} / 25</strong> · Overseas:{' '}
-                <strong className="text-blue-400">{selectedTeamData.overseasCount} / 8</strong> · Score:{' '}
-                <strong className="text-[#F5B942] font-mono">{selectedTeamData.scores.totalScore} pts</strong>
+              <span className="text-xs text-[#A5A9C3]">
+                Squad: <strong className="text-[#F5F4FF]">{selectedTeamData.squadSize} / 25</strong> · Overseas:{' '}
+                <strong className="text-[#00D6D0]">{selectedTeamData.overseasCount} / 8</strong> · Score:{' '}
+                <strong className="text-[#E8BD68] font-mono">{selectedTeamData.scores.totalScore} pts</strong>
               </span>
             </div>
           </div>
 
           <div className="flex items-center gap-6 text-xs font-mono">
             <div>
-              <span className="text-[10px] text-slate-400 block uppercase">Spent</span>
-              <span className="font-bold text-white tabular-nums">
+              <span className="text-[10px] text-[#A5A9C3] block uppercase">Spent</span>
+              <span className="font-bold text-[#F5F4FF] tabular-nums">
                 ₹{selectedTeamData.totalSpent.toFixed(2)} Cr
               </span>
             </div>
             <div>
-              <span className="text-[10px] text-slate-400 block uppercase">Remaining Purse</span>
-              <span className="font-bold text-[#20C997] tabular-nums">
+              <span className="text-[10px] text-[#A5A9C3] block uppercase">Remaining Purse</span>
+              <span className="font-bold text-[#00D6D0] tabular-nums">
                 ₹{selectedTeamData.remainingPurse.toFixed(2)} Cr
               </span>
             </div>
@@ -783,25 +784,25 @@ export const AuctionResultsView: React.FC = () => {
             <div
               key={player.id}
               onClick={() => setInspectedPlayer(player)}
-              className="p-3 rounded-2xl bg-[#080D1A] border border-[#21304d] hover:border-slate-500 transition-colors cursor-pointer flex items-center justify-between gap-3 group"
+              className="p-3 rounded-2xl bg-[#090D1B] border border-[#202944] hover:border-[#A78BFA]/50 transition-colors cursor-pointer flex items-center justify-between gap-3 group"
             >
               <div className="flex items-center gap-2.5 min-w-0">
                 <PlayerAvatar player={player} size="sm" showRoleBadge />
                 <div className="min-w-0">
-                  <span className="block text-xs font-bold text-white truncate group-hover:text-[#F5B942]">
+                  <span className="block text-xs font-bold text-[#F5F4FF] truncate group-hover:text-[#A78BFA]">
                     {player.name}
                   </span>
-                  <span className="text-[11px] text-slate-400">
+                  <span className="text-[11px] text-[#A5A9C3]">
                     {player.role} · {player.country}
                   </span>
                 </div>
               </div>
 
               <div className="text-right shrink-0">
-                <span className="text-xs font-mono font-bold text-[#F5B942] tabular-nums block">
+                <span className="text-xs font-mono font-bold text-[#E8BD68] tabular-nums block">
                   {formatCrores(player.soldPrice || player.basePrice)}
                 </span>
-                <span className="text-[9px] font-mono text-slate-500 uppercase">
+                <span className="text-[9px] font-mono text-[#A5A9C3] uppercase">
                   {selectedTeamData.team.retainedPlayers.includes(player.id) ? 'Retained' : 'Auction Buy'}
                 </span>
               </div>

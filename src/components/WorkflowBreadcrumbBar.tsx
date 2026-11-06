@@ -6,7 +6,7 @@
 import React from 'react';
 import { useAuction } from '../context/AuctionContext';
 import { WorkflowStep } from '../types/auction';
-import { Check, ChevronRight } from 'lucide-react';
+import { Check, ChevronRight, Shield } from 'lucide-react';
 
 interface StepMeta {
   key: WorkflowStep;
@@ -29,39 +29,37 @@ const WORKFLOW_STEPS: StepMeta[] = [
 ];
 
 export const WorkflowBreadcrumbBar: React.FC = () => {
-  const { workflowStep, setWorkflowStep, activeRoom } = useAuction();
+  const { workflowStep, activeRoom } = useAuction();
 
   const currentIndex = WORKFLOW_STEPS.findIndex((s) => s.key === workflowStep);
-  const activeStep = WORKFLOW_STEPS[currentIndex] || WORKFLOW_STEPS[0];
 
   return (
-    <div className="w-full bg-[#0d1527] border-b border-[#21304d] px-4 py-2.5 overflow-x-auto scrollbar-thin">
-      <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 min-w-[760px]">
+    <div className="w-full bg-slate-50 dark:bg-[#11182B] border-b border-slate-200 dark:border-[#202944] px-4 py-2.5 overflow-x-auto scrollbar-thin transition-colors">
+      <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 min-w-[780px]">
         {/* Step indicator pills */}
         <div className="flex items-center gap-1.5 flex-1">
           {WORKFLOW_STEPS.map((step, index) => {
             const isCompleted = index < currentIndex;
             const isCurrent = index === currentIndex;
-            const isUpcoming = index > currentIndex;
 
             return (
               <React.Fragment key={step.key}>
                 <div
                   className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${
                     isCurrent
-                      ? 'bg-[#F5B942] text-[#080D1A] font-extrabold shadow-sm shadow-[#F5B942]/30 ring-1 ring-[#F5B942]'
+                      ? 'bg-[#A78BFA] text-[#090D1B] font-extrabold shadow-sm shadow-[#A78BFA]/30 ring-1 ring-[#A78BFA]'
                       : isCompleted
-                      ? 'bg-[#172338] text-[#20C997] hover:bg-[#1e2f49]'
-                      : 'bg-transparent text-slate-500 opacity-60'
+                      ? 'bg-emerald-50 dark:bg-[#171D35] text-[#20C997] dark:text-[#00D6D0] border border-emerald-500/20 dark:border-[#00D6D0]/20'
+                      : 'bg-transparent text-slate-400 dark:text-[#A5A9C3]/50'
                   }`}
                 >
                   <span
                     className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold ${
                       isCurrent
-                        ? 'bg-[#080D1A] text-[#F5B942]'
+                        ? 'bg-[#090D1B] text-[#A78BFA]'
                         : isCompleted
-                        ? 'bg-[#20C997]/20 text-[#20C997]'
-                        : 'bg-slate-800 text-slate-500'
+                        ? 'bg-[#20C997]/20 dark:bg-[#00D6D0]/20 text-[#20C997] dark:text-[#00D6D0]'
+                        : 'bg-slate-200 dark:bg-[#202944] text-slate-400 dark:text-[#A5A9C3]/50'
                     }`}
                   >
                     {isCompleted ? <Check className="w-2.5 h-2.5 stroke-[3]" /> : step.number}
@@ -72,7 +70,11 @@ export const WorkflowBreadcrumbBar: React.FC = () => {
                 {index < WORKFLOW_STEPS.length - 1 && (
                   <ChevronRight
                     className={`w-3 h-3 shrink-0 ${
-                      isCompleted ? 'text-[#20C997]/50' : 'text-slate-600'
+                      isCompleted
+                        ? 'text-[#20C997] dark:text-[#00D6D0]/60'
+                        : isCurrent
+                        ? 'text-[#A78BFA]'
+                        : 'text-slate-300 dark:text-[#202944]'
                     }`}
                   />
                 )}
@@ -81,11 +83,12 @@ export const WorkflowBreadcrumbBar: React.FC = () => {
           })}
         </div>
 
-        {/* Current Phase Badge */}
+        {/* Current Phase / Room Code Badge */}
         {activeRoom && (
-          <div className="hidden lg:flex items-center gap-2 shrink-0 pl-3 border-l border-[#21304d]">
-            <span className="text-[11px] text-slate-400">War Room:</span>
-            <span className="px-2 py-0.5 rounded bg-[#10192B] border border-[#21304d] text-xs font-mono font-bold text-[#F5B942]">
+          <div className="hidden lg:flex items-center gap-2 shrink-0 pl-3 border-l border-slate-200 dark:border-[#202944]">
+            <Shield className="w-3.5 h-3.5 text-[#E8BD68]" />
+            <span className="text-[11px] text-slate-500 dark:text-[#A5A9C3]">War Room:</span>
+            <span className="px-2 py-0.5 rounded bg-white dark:bg-[#171D35] border border-slate-200 dark:border-[#202944] text-xs font-mono font-bold text-[#E8BD68]">
               {activeRoom.code}
             </span>
           </div>

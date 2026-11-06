@@ -142,7 +142,13 @@ const AuctionContext = createContext<AuctionContextType | undefined>(undefined);
 const STORAGE_KEY_PREFIX = 'ipl_auction_arena_2027_';
 
 export const AuctionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY_PREFIX + 'theme');
+      if (saved === 'light' || saved === 'dark') return saved;
+    } catch {}
+    return 'dark';
+  });
   const [soundMuted, setSoundMuted] = useState<boolean>(false);
   const [currentTab, setCurrentTab] = useState<ViewTab>('auction');
   const [isGmailModalOpen, setIsGmailModalOpen] = useState<boolean>(false);
@@ -301,6 +307,9 @@ export const AuctionProvider: React.FC<{ children: React.ReactNode }> = ({ child
     } else {
       document.documentElement.classList.remove('dark');
     }
+    try {
+      localStorage.setItem(STORAGE_KEY_PREFIX + 'theme', theme);
+    } catch {}
   }, [theme]);
 
   // Sync Firebase authentication state

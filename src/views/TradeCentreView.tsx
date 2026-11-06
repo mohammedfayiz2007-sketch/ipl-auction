@@ -59,51 +59,51 @@ export const TradeCentreView: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 text-[#F5F4FF]">
       {/* Header */}
       <div>
-        <h1 className="text-2xl lg:text-3xl font-extrabold text-white font-heading">
+        <h1 className="text-2xl lg:text-3xl font-extrabold text-[#F5F4FF] font-heading">
           Official IPL Trade Centre
         </h1>
-        <p className="text-sm text-slate-400 mt-1">
+        <p className="text-sm text-[#A5A9C3] mt-1">
           BCCI sanctioned trade window. Propose player swaps and cash balancing between franchises.
         </p>
       </div>
 
       {feedback && (
-        <div className="p-4 rounded-2xl bg-[#20C997]/15 border border-[#20C997] text-white text-xs font-semibold flex items-center gap-2">
+        <div className="p-4 rounded-2xl bg-[#20C997]/20 border border-[#20C997] text-[#F5F4FF] text-xs font-semibold flex items-center gap-2 shadow-lg">
           <Check className="w-4 h-4 text-[#20C997]" />
           <span>{feedback}</span>
         </div>
       )}
 
       {/* Trade Proposal Desk */}
-      <div className="p-6 rounded-3xl bg-[#10192B] border border-[#21304d]">
-        <h2 className="text-base font-bold text-white font-heading mb-4 flex items-center gap-2">
-          <ArrowLeftRight className="w-4 h-4 text-[#F5B942]" />
+      <div className="p-6 rounded-3xl bg-[#171D35] border border-[#202944] shadow-xl">
+        <h2 className="text-base font-bold text-[#F5F4FF] font-heading mb-4 flex items-center gap-2">
+          <ArrowLeftRight className="w-4 h-4 text-[#E8BD68]" />
           <span>Formulate Inter-Franchise Trade</span>
         </h2>
 
         <form onSubmit={handleProposeTrade} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Left: What User's Franchise Offers */}
-            <div className="p-4 rounded-2xl bg-[#080D1A] border border-[#21304d]">
+            <div className="p-4 rounded-2xl bg-[#090D1B] border border-[#202944]">
               <div className="flex items-center gap-2 mb-3">
                 <TeamEmblem code={userTeam.code} size="sm" />
-                <span className="text-xs font-bold text-white">Your Offer: {userTeam.name}</span>
+                <span className="text-xs font-bold text-[#F5F4FF]">Your Offer: {userTeam.name}</span>
               </div>
 
               {myPlayers.length === 0 ? (
-                <p className="text-xs text-slate-500 italic py-4">
+                <p className="text-xs text-[#A5A9C3] italic py-4">
                   No squad players available to trade. Acquire players first in the Live Arena!
                 </p>
               ) : (
                 <div className="space-y-2">
-                  <label className="text-xs text-slate-400 block font-medium">Select Player to Trade Away:</label>
+                  <label className="text-xs text-[#A5A9C3] block font-medium">Select Player to Trade Away:</label>
                   <select
                     value={selectedOfferPlayerId}
                     onChange={(e) => setSelectedOfferPlayerId(e.target.value)}
-                    className="w-full bg-[#10192B] border border-[#21304d] rounded-xl px-3 py-2 text-xs text-white outline-none cursor-pointer"
+                    className="w-full bg-[#11182B] border border-[#202944] rounded-xl px-3 py-2 text-xs text-[#F5F4FF] outline-none cursor-pointer focus:border-[#A78BFA]"
                   >
                     <option value="">-- Choose squad member --</option>
                     {myPlayers.map((p) => (
@@ -117,17 +117,17 @@ export const TradeCentreView: React.FC = () => {
             </div>
 
             {/* Right: What User's Franchise Requests */}
-            <div className="p-4 rounded-2xl bg-[#080D1A] border border-[#21304d]">
+            <div className="p-4 rounded-2xl bg-[#090D1B] border border-[#202944]">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <TeamEmblem code={partnerTeam.code} size="sm" />
-                  <span className="text-xs font-bold text-white">Trade Partner:</span>
+                  <span className="text-xs font-bold text-[#F5F4FF]">Trade Partner:</span>
                 </div>
 
                 <select
                   value={partnerTeamId}
                   onChange={(e) => setPartnerTeamId(e.target.value)}
-                  className="bg-[#10192B] border border-[#21304d] rounded-lg px-2 py-1 text-xs text-white outline-none cursor-pointer"
+                  className="bg-[#11182B] border border-[#202944] rounded-lg px-2 py-1 text-xs text-[#F5F4FF] outline-none cursor-pointer focus:border-[#A78BFA]"
                 >
                   {teams
                     .filter((t) => t.id !== userTeam.id)
@@ -140,16 +140,16 @@ export const TradeCentreView: React.FC = () => {
               </div>
 
               {partnerPlayers.length === 0 ? (
-                <p className="text-xs text-slate-500 italic py-4">
+                <p className="text-xs text-[#A5A9C3] italic py-4">
                   {partnerTeam.name} currently has no squad players to trade.
                 </p>
               ) : (
                 <div className="space-y-2">
-                  <label className="text-xs text-slate-400 block font-medium">Select Desired Player:</label>
+                  <label className="text-xs text-[#A5A9C3] block font-medium">Select Desired Player:</label>
                   <select
                     value={selectedRequestPlayerId}
                     onChange={(e) => setSelectedRequestPlayerId(e.target.value)}
-                    className="w-full bg-[#10192B] border border-[#21304d] rounded-xl px-3 py-2 text-xs text-white outline-none cursor-pointer"
+                    className="w-full bg-[#11182B] border border-[#202944] rounded-xl px-3 py-2 text-xs text-[#F5F4FF] outline-none cursor-pointer focus:border-[#A78BFA]"
                   >
                     <option value="">-- Choose player from {partnerTeam.code} --</option>
                     {partnerPlayers.map((p) => (
@@ -164,31 +164,31 @@ export const TradeCentreView: React.FC = () => {
           </div>
 
           {/* Cash Balancing */}
-          <div className="p-4 rounded-2xl bg-[#080D1A] border border-[#21304d] flex flex-wrap items-center justify-between gap-4">
+          <div className="p-4 rounded-2xl bg-[#090D1B] border border-[#202944] flex flex-wrap items-center justify-between gap-4">
             <div>
-              <span className="text-xs font-bold text-white block">Cash Balancing Adjustment</span>
-              <span className="text-[11px] text-slate-400">
+              <span className="text-xs font-bold text-[#F5F4FF] block">Cash Balancing Adjustment</span>
+              <span className="text-[11px] text-[#A5A9C3]">
                 Positive = You pay cash; Negative = You receive cash.
               </span>
             </div>
 
             <div className="flex items-center gap-2">
-              <span className="text-xs font-mono text-slate-400">₹</span>
+              <span className="text-xs font-mono text-[#A5A9C3]">₹</span>
               <input
                 type="number"
                 step="0.5"
                 value={cashAdjustment}
                 onChange={(e) => setCashAdjustment(parseFloat(e.target.value) || 0)}
-                className="w-28 px-3 py-1.5 rounded-xl bg-[#10192B] border border-[#21304d] text-white font-mono text-xs tabular-nums text-center outline-none"
+                className="w-28 px-3 py-1.5 rounded-xl bg-[#11182B] border border-[#202944] text-[#F5F4FF] font-mono text-xs tabular-nums text-center outline-none focus:border-[#A78BFA]"
               />
-              <span className="text-xs font-mono text-slate-400">Crores</span>
+              <span className="text-xs font-mono text-[#A5A9C3]">Crores</span>
             </div>
           </div>
 
           <button
             type="submit"
             disabled={!selectedOfferPlayerId || !selectedRequestPlayerId}
-            className="w-full py-3.5 rounded-xl bg-[#F5B942] hover:bg-[#ffc95c] disabled:opacity-40 text-[#080D1A] font-extrabold text-xs shadow-md transition-all cursor-pointer"
+            className="w-full py-3.5 rounded-xl bg-[#A78BFA] hover:bg-[#b8a1fb] disabled:opacity-40 text-[#090D1B] font-extrabold text-xs shadow-lg shadow-[#A78BFA]/20 transition-all cursor-pointer"
           >
             Submit Official Trade Proposal
           </button>
@@ -196,14 +196,14 @@ export const TradeCentreView: React.FC = () => {
       </div>
 
       {/* ACTIVE & PAST TRADE PROPOSALS */}
-      <div className="p-6 rounded-3xl bg-[#10192B] border border-[#21304d]">
-        <h2 className="text-base font-bold text-white font-heading mb-4 flex items-center gap-2">
-          <Clock className="w-4 h-4 text-blue-400" />
+      <div className="p-6 rounded-3xl bg-[#171D35] border border-[#202944] shadow-xl">
+        <h2 className="text-base font-bold text-[#F5F4FF] font-heading mb-4 flex items-center gap-2">
+          <Clock className="w-4 h-4 text-[#00D6D0]" />
           <span>Trade Log & Proposals ({tradeOffers.length})</span>
         </h2>
 
         {tradeOffers.length === 0 ? (
-          <p className="text-xs text-slate-500 text-center py-8">
+          <p className="text-xs text-[#A5A9C3] text-center py-8">
             No inter-franchise trades proposed yet. Formulate a swap above!
           </p>
         ) : (
@@ -217,16 +217,16 @@ export const TradeCentreView: React.FC = () => {
               return (
                 <div
                   key={trade.id}
-                  className="p-4 rounded-2xl bg-[#080D1A] border border-[#21304d] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+                  className="p-4 rounded-2xl bg-[#090D1B] border border-[#202944] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
                 >
                   <div className="flex items-center gap-3">
                     <TeamEmblem code={fromTeam?.code || 'IPL'} size="sm" />
                     <div>
-                      <div className="text-xs font-bold text-white">
-                        {fromTeam?.code} offers <span className="text-[#F5B942]">{offeredP?.name}</span> for{' '}
-                        <span className="text-blue-400">{reqP?.name}</span> ({toTeam?.code})
+                      <div className="text-xs font-bold text-[#F5F4FF]">
+                        {fromTeam?.code} offers <span className="text-[#E8BD68]">{offeredP?.name}</span> for{' '}
+                        <span className="text-[#00D6D0]">{reqP?.name}</span> ({toTeam?.code})
                       </div>
-                      <span className="text-[10px] text-slate-500 font-mono">
+                      <span className="text-[10px] text-[#A5A9C3] font-mono">
                         Cash Adjustment: ₹{trade.cashAdjustment} Cr · Status: {trade.status.toUpperCase()}
                       </span>
                     </div>
@@ -237,14 +237,14 @@ export const TradeCentreView: React.FC = () => {
                       <>
                         <button
                           onClick={() => respondToTrade(trade.id, true)}
-                          className="px-3 py-1.5 rounded-lg bg-[#20C997] hover:bg-[#25e2aa] text-[#080D1A] font-extrabold text-xs transition-colors flex items-center gap-1 cursor-pointer"
+                          className="px-3.5 py-1.5 rounded-lg bg-[#20C997] hover:bg-[#1db889] text-[#090D1B] font-extrabold text-xs transition-colors flex items-center gap-1 cursor-pointer"
                         >
                           <Check className="w-3.5 h-3.5" />
                           <span>Accept</span>
                         </button>
                         <button
                           onClick={() => respondToTrade(trade.id, false)}
-                          className="px-3 py-1.5 rounded-lg bg-[#FF5263] hover:bg-[#ff6c7b] text-white font-extrabold text-xs transition-colors flex items-center gap-1 cursor-pointer"
+                          className="px-3.5 py-1.5 rounded-lg bg-[#FF5C75] hover:bg-[#e04860] text-white font-extrabold text-xs transition-colors flex items-center gap-1 cursor-pointer"
                         >
                           <X className="w-3.5 h-3.5" />
                           <span>Reject</span>
@@ -255,7 +255,7 @@ export const TradeCentreView: React.FC = () => {
                         className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded uppercase ${
                           trade.status === 'accepted'
                             ? 'bg-[#20C997]/20 text-[#20C997]'
-                            : 'bg-[#FF5263]/20 text-[#FF5263]'
+                            : 'bg-[#FF5C75]/20 text-[#FF5C75]'
                         }`}
                       >
                         {trade.status}

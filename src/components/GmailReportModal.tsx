@@ -35,7 +35,7 @@ export const GmailReportModal: React.FC<GmailReportModalProps> = ({
   onClose,
   defaultRecipient = '',
 }) => {
-  const { activeRoom, teams, players, user, signInGoogle } = useAuction();
+  const { activeRoom, teams, players, user } = useAuction();
 
   const [recipient, setRecipient] = useState<string>(
     defaultRecipient || user.email || ''
@@ -126,22 +126,22 @@ export const GmailReportModal: React.FC<GmailReportModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="relative w-full max-w-2xl bg-[#10192B] border border-[#21304d] rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200 text-[#F5F4FF]">
+      <div className="relative w-full max-w-2xl bg-[#090D1B] border border-[#202944] rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
         {/* Header */}
-        <div className="px-6 py-5 border-b border-[#21304d] flex items-center justify-between bg-gradient-to-r from-[#10192B] via-[#172338] to-[#10192B]">
+        <div className="px-6 py-5 border-b border-[#202944] flex items-center justify-between bg-gradient-to-r from-[#171D35] via-[#202944] to-[#171D35]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#EA4335]/15 border border-[#EA4335]/30 flex items-center justify-center text-[#EA4335]">
+            <div className="w-10 h-10 rounded-2xl bg-[#FF5C75]/15 border border-[#FF5C75]/30 flex items-center justify-center text-[#FF5C75]">
               <Mail className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-extrabold text-white font-heading flex items-center gap-2">
+              <h3 className="text-base font-extrabold text-[#F5F4FF] font-heading flex items-center gap-2">
                 <span>Dispatch Auction Ledger via Gmail</span>
-                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#EA4335]/20 text-[#EA4335] border border-[#EA4335]/30 uppercase">
+                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#FF5C75]/20 text-[#FF5C75] border border-[#FF5C75]/30 uppercase">
                   Google Workspace
                 </span>
               </h3>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-[#A5A9C3]">
                 Send official certified IPL 2027 auction reports directly from your connected Gmail.
               </p>
             </div>
@@ -149,7 +149,7 @@ export const GmailReportModal: React.FC<GmailReportModalProps> = ({
 
           <button
             onClick={onClose}
-            className="p-2 text-slate-400 hover:text-white rounded-xl hover:bg-slate-800 transition-colors cursor-pointer"
+            className="p-2 text-[#A5A9C3] hover:text-[#F5F4FF] rounded-xl hover:bg-[#202944] transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -159,14 +159,14 @@ export const GmailReportModal: React.FC<GmailReportModalProps> = ({
         <div className="p-6 space-y-5 overflow-y-auto flex-1">
           {/* Auth Status Notification */}
           {!isAuthorized ? (
-            <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-start justify-between gap-3">
+            <div className="p-4 rounded-2xl bg-[#FFB84D]/10 border border-[#FFB84D]/30 flex items-start justify-between gap-3 shadow-md">
               <div className="flex items-start gap-2.5">
-                <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-                <div className="text-xs text-slate-200 space-y-1">
-                  <span className="font-bold text-amber-300 block">
+                <AlertTriangle className="w-4 h-4 text-[#FFB84D] shrink-0 mt-0.5" />
+                <div className="text-xs text-[#F5F4FF] space-y-1">
+                  <span className="font-bold text-[#FFB84D] block">
                     Gmail Authorization Required
                   </span>
-                  <span>
+                  <span className="text-[#A5A9C3]">
                     To send or draft emails directly through Google Workspace, sign in with Google to grant permission.
                   </span>
                 </div>
@@ -186,7 +186,7 @@ export const GmailReportModal: React.FC<GmailReportModalProps> = ({
                     });
                   }
                 }}
-                className="px-3 py-1.5 rounded-xl bg-white text-slate-900 font-bold text-xs hover:bg-slate-100 flex items-center gap-1.5 shrink-0 cursor-pointer shadow-sm"
+                className="px-3.5 py-2 rounded-xl bg-white text-[#090D1B] font-bold text-xs hover:bg-slate-100 flex items-center gap-1.5 shrink-0 cursor-pointer shadow-sm"
               >
                 <span>Authorize Gmail</span>
               </button>
@@ -201,7 +201,7 @@ export const GmailReportModal: React.FC<GmailReportModalProps> = ({
           {/* Form Inputs */}
           <div className="space-y-4 text-xs">
             <div>
-              <label className="block text-slate-300 font-semibold mb-1.5">
+              <label className="block text-[#A5A9C3] font-semibold mb-1.5">
                 Recipient Email Address *
               </label>
               <input
@@ -209,12 +209,12 @@ export const GmailReportModal: React.FC<GmailReportModalProps> = ({
                 value={recipient}
                 onChange={(e) => setRecipient(e.target.value)}
                 placeholder="manager@franchise.com"
-                className="w-full px-4 py-2.5 rounded-xl bg-[#080D1A] border border-[#21304d] text-white focus:outline-none focus:border-[#4388FF] transition-colors"
+                className="w-full px-4 py-2.5 rounded-xl bg-[#11182B] border border-[#202944] text-[#F5F4FF] focus:outline-none focus:border-[#A78BFA] transition-colors"
               />
             </div>
 
             <div>
-              <label className="block text-slate-300 font-semibold mb-1.5">
+              <label className="block text-[#A5A9C3] font-semibold mb-1.5">
                 Subject Line
               </label>
               <input
@@ -222,28 +222,28 @@ export const GmailReportModal: React.FC<GmailReportModalProps> = ({
                 value={subjectOverride}
                 onChange={(e) => setSubjectOverride(e.target.value)}
                 placeholder={report.subject}
-                className="w-full px-4 py-2.5 rounded-xl bg-[#080D1A] border border-[#21304d] text-white focus:outline-none focus:border-[#4388FF] transition-colors"
+                className="w-full px-4 py-2.5 rounded-xl bg-[#11182B] border border-[#202944] text-[#F5F4FF] focus:outline-none focus:border-[#A78BFA] transition-colors"
               />
             </div>
 
             {/* Email Contents Preview Toggle */}
-            <div className="border border-[#21304d] rounded-2xl overflow-hidden">
+            <div className="border border-[#202944] rounded-2xl overflow-hidden shadow-sm">
               <button
                 type="button"
                 onClick={() => setIsPreviewOpen((prev) => !prev)}
-                className="w-full px-4 py-2.5 bg-[#172338] text-slate-300 font-semibold flex items-center justify-between text-left hover:bg-[#1f2f4a] transition-colors cursor-pointer"
+                className="w-full px-4 py-2.5 bg-[#171D35] text-[#A5A9C3] font-semibold flex items-center justify-between text-left hover:bg-[#202944] transition-colors cursor-pointer"
               >
                 <span className="flex items-center gap-2">
-                  <FileText className="w-4 h-4 text-[#F5B942]" />
-                  <span>Preview Generated Report Email</span>
+                  <FileText className="w-4 h-4 text-[#E8BD68]" />
+                  <span className="text-[#F5F4FF]">Preview Generated Report Email</span>
                 </span>
-                <span className="text-[11px] text-[#4388FF]">
+                <span className="text-[11px] text-[#A78BFA]">
                   {isPreviewOpen ? 'Hide Preview' : 'Show Preview'}
                 </span>
               </button>
 
               {isPreviewOpen && (
-                <div className="p-4 bg-[#080D1A] max-h-60 overflow-y-auto text-slate-300 text-[11px] font-mono leading-relaxed border-t border-[#21304d]">
+                <div className="p-4 bg-[#090D1B] max-h-60 overflow-y-auto text-[#A5A9C3] text-[11px] font-mono leading-relaxed border-t border-[#202944]">
                   <pre className="whitespace-pre-wrap">{report.text}</pre>
                 </div>
               )}
@@ -256,7 +256,7 @@ export const GmailReportModal: React.FC<GmailReportModalProps> = ({
               className={`p-3.5 rounded-2xl text-xs flex items-center gap-2.5 ${
                 statusMessage.type === 'success'
                   ? 'bg-[#20C997]/15 border border-[#20C997]/40 text-[#20C997]'
-                  : 'bg-[#FF5263]/15 border border-[#FF5263]/40 text-[#FF5263]'
+                  : 'bg-[#FF5C75]/15 border border-[#FF5C75]/40 text-[#FF5C75]'
               }`}
             >
               {statusMessage.type === 'success' ? (
@@ -270,8 +270,8 @@ export const GmailReportModal: React.FC<GmailReportModalProps> = ({
         </div>
 
         {/* Footer Actions */}
-        <div className="px-6 py-4 bg-[#080D1A] border-t border-[#21304d] flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="text-[11px] text-slate-400">
+        <div className="px-6 py-4 bg-[#11182B] border-t border-[#202944] flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="text-[11px] text-[#A5A9C3]">
             Powered by Google Workspace Gmail REST API
           </div>
 
@@ -279,7 +279,7 @@ export const GmailReportModal: React.FC<GmailReportModalProps> = ({
             <button
               onClick={() => handleInitiateAction('draft')}
               disabled={isDrafting || isSending || !isAuthorized}
-              className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-[#172338] hover:bg-[#1f2f4a] disabled:opacity-50 text-slate-200 border border-[#21304d] font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
+              className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-[#202944] hover:bg-[#202944]/80 disabled:opacity-50 text-[#F5F4FF] border border-[#202944] font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
             >
               {isDrafting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <FileText className="w-3.5 h-3.5" />}
               <span>Save as Draft</span>
@@ -288,7 +288,7 @@ export const GmailReportModal: React.FC<GmailReportModalProps> = ({
             <button
               onClick={() => handleInitiateAction('send')}
               disabled={isDrafting || isSending || !isAuthorized}
-              className="flex-1 sm:flex-none px-5 py-2.5 rounded-xl bg-[#EA4335] hover:bg-[#d6382b] disabled:opacity-50 text-white font-extrabold text-xs shadow-lg shadow-[#EA4335]/20 flex items-center justify-center gap-2 transition-all cursor-pointer"
+              className="flex-1 sm:flex-none px-5 py-2.5 rounded-xl bg-[#FF5C75] hover:bg-[#e04860] disabled:opacity-50 text-white font-extrabold text-xs shadow-lg shadow-[#FF5C75]/20 flex items-center justify-center gap-2 transition-all cursor-pointer"
             >
               {isSending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
               <span>Send via Gmail</span>
@@ -299,30 +299,30 @@ export const GmailReportModal: React.FC<GmailReportModalProps> = ({
         {/* MANDATORY USER CONFIRMATION MODAL FOR DESTRUCTIVE/MUTATING WORKSPACE ACTIONS */}
         {isConfirmDialogOpen && (
           <div className="absolute inset-0 z-50 flex items-center justify-center p-6 bg-black/85 backdrop-blur-sm animate-in fade-in">
-            <div className="max-w-md w-full bg-[#10192B] border-2 border-[#EA4335] rounded-3xl p-6 shadow-2xl text-center space-y-4">
-              <div className="w-12 h-12 rounded-full bg-[#EA4335]/20 text-[#EA4335] flex items-center justify-center mx-auto">
+            <div className="max-w-md w-full bg-[#171D35] border border-[#FF5C75] rounded-3xl p-6 shadow-2xl text-center space-y-4">
+              <div className="w-12 h-12 rounded-full bg-[#FF5C75]/20 text-[#FF5C75] flex items-center justify-center mx-auto">
                 <AlertTriangle className="w-6 h-6" />
               </div>
 
               <div>
-                <h4 className="text-base font-extrabold text-white font-heading">
+                <h4 className="text-base font-extrabold text-[#F5F4FF] font-heading">
                   Confirm Gmail {pendingAction === 'send' ? 'Dispatch' : 'Draft Creation'}
                 </h4>
-                <p className="text-xs text-slate-300 mt-2">
-                  Are you sure you want to {pendingAction === 'send' ? 'send' : 'save a draft of'} the IPL Auction Arena report to <strong className="text-white">{recipient}</strong> with subject <strong className="text-white">"{finalSubject}"</strong>?
+                <p className="text-xs text-[#A5A9C3] mt-2">
+                  Are you sure you want to {pendingAction === 'send' ? 'send' : 'save a draft of'} the IPL Auction Arena report to <strong className="text-[#F5F4FF]">{recipient}</strong> with subject <strong className="text-[#E8BD68]">"{finalSubject}"</strong>?
                 </p>
               </div>
 
               <div className="pt-2 flex items-center justify-center gap-3">
                 <button
                   onClick={() => setIsConfirmDialogOpen(false)}
-                  className="px-4 py-2 rounded-xl bg-[#172338] text-slate-300 font-bold text-xs hover:bg-[#1f2f4a] border border-[#21304d] cursor-pointer"
+                  className="px-4 py-2.5 rounded-xl bg-[#202944] text-[#A5A9C3] hover:text-[#F5F4FF] font-bold text-xs border border-[#202944] cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleExecuteConfirmedAction}
-                  className="px-5 py-2 rounded-xl bg-[#EA4335] text-white font-black text-xs hover:bg-[#d6382b] shadow-lg shadow-[#EA4335]/30 cursor-pointer"
+                  className="px-5 py-2.5 rounded-xl bg-[#FF5C75] text-white font-black text-xs hover:bg-[#e04860] shadow-lg shadow-[#FF5C75]/30 cursor-pointer"
                 >
                   Yes, {pendingAction === 'send' ? 'Send Email' : 'Create Draft'}
                 </button>

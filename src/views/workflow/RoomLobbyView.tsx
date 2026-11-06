@@ -52,39 +52,41 @@ export const RoomLobbyView: React.FC<{ onNavigateToTeamSelect: () => void }> = (
   )}`;
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8 py-4">
+    <div className="max-w-6xl mx-auto space-y-8 py-4 text-[#F5F4FF]">
       {/* Lobby Hero & Sharing Strip */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-[#10192B] via-[#172338] to-[#10192B] border-2 border-[#F5B942]/40 shadow-2xl space-y-6">
-        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+      <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-[#171D35] via-[#11182B] to-[#171D35] border border-[#202944] shadow-2xl space-y-6 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-[#00D6D0]/10 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 relative z-10">
           <div>
-            <div className="flex items-center gap-2 text-xs font-semibold text-[#20C997] mb-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#20C997] animate-pulse" />
-              <span>ROOM LOBBY ACTIVE · MULTIPLAYER SYNCHRONIZED</span>
+            <div className="flex items-center gap-2 text-xs font-semibold text-[#00D6D0] mb-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#00D6D0] animate-pulse shadow-[0_0_8px_#00D6D0]" />
+              <span>WAR ROOM LOBBY ACTIVE · MULTIPLAYER SYNCHRONIZED</span>
             </div>
 
-            <h1 className="text-2xl sm:text-4xl font-extrabold text-white font-heading tracking-tight">
+            <h1 className="text-2xl sm:text-4xl font-extrabold text-[#F5F4FF] font-heading tracking-tight">
               {activeRoom.name}
             </h1>
-            <p className="text-xs sm:text-sm text-slate-300 mt-1">
-              Season: <strong className="text-white">IPL 2027 Simulation</strong> · Format:{' '}
-              <strong className="text-white">Mega Auction (₹{activeRoom.startingPurse} Cr Purse)</strong>
+            <p className="text-xs sm:text-sm text-[#A5A9C3] mt-1">
+              Season: <strong className="text-[#F5F4FF]">IPL 2027 Simulation</strong> · Format:{' '}
+              <strong className="text-[#E8BD68]">Mega Auction (₹{activeRoom.startingPurse} Cr Starting Purse)</strong>
             </p>
           </div>
 
           {/* Room Code Showcase */}
-          <div className="flex flex-col sm:flex-row items-center gap-4 bg-[#080D1A] p-4 rounded-2xl border border-[#21304d]">
+          <div className="flex flex-col sm:flex-row items-center gap-4 bg-[#090D1B] p-4 rounded-2xl border border-[#202944] shadow-lg">
             <div className="text-center sm:text-left">
-              <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">
+              <span className="text-[10px] text-[#A5A9C3] font-bold uppercase tracking-wider block">
                 Official Room Code
               </span>
-              <span className="text-3xl font-black font-mono text-[#F5B942] tracking-widest block">
+              <span className="text-3xl font-black font-mono text-[#E8BD68] tracking-widest block">
                 {activeRoom.code}
               </span>
             </div>
 
             {/* QR Code Vector Representation */}
             <div className="w-16 h-16 rounded-xl bg-white p-1.5 flex items-center justify-center shadow-inner">
-              <svg viewBox="0 0 100 100" className="w-full h-full text-[#080D1A]" fill="currentColor">
+              <svg viewBox="0 0 100 100" className="w-full h-full text-[#090D1B]" fill="currentColor">
                 <rect x="10" y="10" width="30" height="30" rx="4" />
                 <rect x="18" y="18" width="14" height="14" fill="white" />
                 <rect x="60" y="10" width="30" height="30" rx="4" />
@@ -101,21 +103,21 @@ export const RoomLobbyView: React.FC<{ onNavigateToTeamSelect: () => void }> = (
         </div>
 
         {/* Share Action Buttons */}
-        <div className="pt-4 border-t border-[#21304d] flex flex-wrap items-center justify-between gap-3">
+        <div className="pt-4 border-t border-[#202944] flex flex-wrap items-center justify-between gap-3 relative z-10">
           <div className="flex flex-wrap items-center gap-2.5">
             <button
               onClick={handleCopyCode}
-              className="px-4 py-2 rounded-xl bg-[#172338] hover:bg-[#1f2f4a] text-slate-200 text-xs font-bold border border-[#21304d] transition-colors flex items-center gap-2 cursor-pointer"
+              className="px-4 py-2.5 rounded-xl bg-[#202944] hover:bg-[#202944]/80 text-[#F5F4FF] text-xs font-bold border border-[#202944] transition-colors flex items-center gap-2 cursor-pointer"
             >
-              <Copy className="w-3.5 h-3.5 text-[#F5B942]" />
+              <Copy className="w-3.5 h-3.5 text-[#E8BD68]" />
               <span>{copiedCode ? 'Room Code Copied!' : 'Copy Room Code'}</span>
             </button>
 
             <button
               onClick={handleCopyLink}
-              className="px-4 py-2 rounded-xl bg-[#172338] hover:bg-[#1f2f4a] text-slate-200 text-xs font-bold border border-[#21304d] transition-colors flex items-center gap-2 cursor-pointer"
+              className="px-4 py-2.5 rounded-xl bg-[#202944] hover:bg-[#202944]/80 text-[#F5F4FF] text-xs font-bold border border-[#202944] transition-colors flex items-center gap-2 cursor-pointer"
             >
-              <Share2 className="w-3.5 h-3.5 text-blue-400" />
+              <Share2 className="w-3.5 h-3.5 text-[#00D6D0]" />
               <span>{copiedLink ? 'Link Copied!' : 'Copy Invitation Link'}</span>
             </button>
 
@@ -123,14 +125,14 @@ export const RoomLobbyView: React.FC<{ onNavigateToTeamSelect: () => void }> = (
               href={whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-colors flex items-center gap-2 cursor-pointer shadow-md inline-flex items-center"
+              className="px-4 py-2.5 rounded-xl bg-[#20C997] hover:bg-[#1db889] text-[#090D1B] text-xs font-extrabold transition-colors flex items-center gap-2 cursor-pointer shadow-md inline-flex items-center"
             >
-              <span>📱 Share on WhatsApp</span>
+              <span>📱 Share via WhatsApp</span>
             </a>
           </div>
 
           <div className="text-right">
-            <span className="text-xs font-mono font-bold text-[#F5B942]">
+            <span className="text-xs font-mono font-bold text-[#E8BD68]">
               Participants Joined: {activeRoom.participants.length} / 10
             </span>
           </div>
@@ -138,15 +140,15 @@ export const RoomLobbyView: React.FC<{ onNavigateToTeamSelect: () => void }> = (
       </div>
 
       {/* WAITING LIST: ALL 10 IPL TEAMS STATUS */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-[#10192B] border border-[#21304d] space-y-6">
+      <div className="p-6 sm:p-8 rounded-3xl bg-[#171D35] border border-[#202944] space-y-6 shadow-2xl">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h2 className="text-xl font-extrabold text-white font-heading flex items-center gap-2">
-              <Shield className="w-5 h-5 text-[#F5B942]" />
+            <h2 className="text-xl font-extrabold text-[#F5F4FF] font-heading flex items-center gap-2">
+              <Shield className="w-5 h-5 text-[#E8BD68]" />
               <span>Franchise Waiting List & Reservation Status</span>
             </h2>
-            <p className="text-xs text-slate-400 mt-1">
-              Teams Selected: <strong className="text-white font-mono">{assignedTeamCount} / 10</strong>.
+            <p className="text-xs text-[#A5A9C3] mt-1">
+              Teams Selected: <strong className="text-[#F5F4FF] font-mono">{assignedTeamCount} / 10</strong>.
               All 10 teams must be assigned before the host can launch the auction.
             </p>
           </div>
@@ -154,9 +156,9 @@ export const RoomLobbyView: React.FC<{ onNavigateToTeamSelect: () => void }> = (
           {/* Primary Action to Select Team */}
           <button
             onClick={onNavigateToTeamSelect}
-            className="px-5 py-3 rounded-xl bg-[#F5B942] hover:bg-[#ffc95c] text-[#080D1A] font-extrabold text-xs shadow-lg transition-all flex items-center gap-2 cursor-pointer"
+            className="px-5 py-3 rounded-xl bg-[#A78BFA] hover:bg-[#b8a1fb] text-[#090D1B] font-extrabold text-xs shadow-lg shadow-[#A78BFA]/20 transition-all flex items-center gap-2 cursor-pointer"
           >
-            <span>Select Your Team</span>
+            <span>Select Your Franchise</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>
@@ -171,21 +173,21 @@ export const RoomLobbyView: React.FC<{ onNavigateToTeamSelect: () => void }> = (
             return (
               <div
                 key={team.id}
-                className={`p-3.5 rounded-2xl flex items-center justify-between border transition-all ${
+                className={`p-4 rounded-2xl flex items-center justify-between border transition-all ${
                   isMyTeam
-                    ? 'bg-[#172338] border-[#F5B942] ring-1 ring-[#F5B942]/30'
+                    ? 'bg-[#202944] border-[#A78BFA] ring-1 ring-[#A78BFA]/40 shadow-lg'
                     : isAssigned
-                    ? 'bg-[#080D1A] border-slate-700'
-                    : 'bg-[#080D1A]/60 border-[#21304d]'
+                    ? 'bg-[#090D1B] border-[#202944]'
+                    : 'bg-[#11182B] border-[#202944]'
                 }`}
               >
-                <div className="flex items-center gap-3 min-w-0">
+                <div className="flex items-center gap-3.5 min-w-0">
                   <TeamEmblem code={team.code} size="md" />
                   <div className="min-w-0">
-                    <span className="block text-sm font-bold text-white truncate">
+                    <span className="block text-sm font-bold text-[#F5F4FF] truncate">
                       {team.name}
                     </span>
-                    <span className="text-xs text-slate-400 font-mono">
+                    <span className="text-xs text-[#A5A9C3] font-mono">
                       Purse: ₹{team.totalPurse.toFixed(2)} Cr
                     </span>
                   </div>
@@ -193,20 +195,20 @@ export const RoomLobbyView: React.FC<{ onNavigateToTeamSelect: () => void }> = (
 
                 <div className="text-right shrink-0">
                   {isMyTeam ? (
-                    <span className="px-2.5 py-1 rounded-lg text-xs font-black bg-[#F5B942] text-[#080D1A] uppercase tracking-wide">
+                    <span className="px-3 py-1 rounded-lg text-xs font-black bg-[#A78BFA] text-[#090D1B] uppercase tracking-wide shadow-sm">
                       Selected By You
                     </span>
                   ) : isAssigned ? (
                     <div className="text-right">
-                      <span className="block text-xs font-bold text-slate-300">
+                      <span className="block text-xs font-bold text-[#F5F4FF]">
                         {assignment.isBot ? '🤖 ' + assignment.userName : '👤 ' + assignment.userName}
                       </span>
-                      <span className="text-[10px] text-slate-500 font-medium uppercase">
+                      <span className="text-[10px] text-[#A5A9C3] font-medium uppercase">
                         Reserved
                       </span>
                     </div>
                   ) : (
-                    <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-[#172338] text-[#20C997] border border-[#20C997]/30">
+                    <span className="px-3 py-1 rounded-lg text-xs font-bold bg-[#202944] text-[#00D6D0] border border-[#00D6D0]/30">
                       Available
                     </span>
                   )}
@@ -218,19 +220,19 @@ export const RoomLobbyView: React.FC<{ onNavigateToTeamSelect: () => void }> = (
 
         {/* Host AI Auto-fill helper (Allows solo or small groups to test full 10-team auction) */}
         {isHost && assignedTeamCount < 10 && (
-          <div className="p-4 rounded-2xl bg-[#080D1A] border border-blue-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="p-4 rounded-2xl bg-[#090D1B] border border-[#A78BFA]/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div>
-              <span className="text-xs font-bold text-white block">
+              <span className="text-xs font-bold text-[#F5F4FF] block">
                 Testing or playing with fewer than 10 human participants?
               </span>
-              <span className="text-[11px] text-slate-400">
+              <span className="text-[11px] text-[#A5A9C3]">
                 You can auto-fill vacant franchises with BCCI Intelligence Bots to satisfy the 10/10 rule.
               </span>
             </div>
 
             <button
               onClick={autoFillRemainingWithBots}
-              className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs transition-colors flex items-center gap-1.5 cursor-pointer shrink-0"
+              className="px-4 py-2.5 rounded-xl bg-[#202944] hover:bg-[#A78BFA] text-[#00D6D0] hover:text-[#090D1B] font-bold text-xs border border-[#00D6D0]/30 hover:border-[#A78BFA] transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
             >
               <Cpu className="w-3.5 h-3.5" />
               <span>Auto-Fill Vacant with Bots</span>

@@ -113,7 +113,7 @@ function AppContent() {
     currentTab !== 'landing';
 
   return (
-    <div className="min-h-screen bg-[#080D1A] text-[#F5F7FC] flex flex-col font-sans transition-colors duration-200">
+    <div className="min-h-screen bg-[#F4F6FB] dark:bg-[#090D1B] text-[#0C1222] dark:text-[#F5F4FF] flex flex-col font-sans transition-colors duration-200">
       {/* Top Navbar */}
       <Navbar
         onToggleMobileMenu={() => setIsMobileMenuOpen((prev) => !prev)}
@@ -134,16 +134,16 @@ function AppContent() {
         <main className="flex-1 p-4 sm:p-6 lg:p-8 min-w-0 overflow-y-auto">
           {/* If inspecting an auxiliary reference tab, show quick-return banner */}
           {isBrowsingReferenceTab && (
-            <div className="mb-6 p-3 sm:p-4 rounded-2xl bg-gradient-to-r from-[#10192B] via-[#172338] to-[#10192B] border border-[#F5B942]/40 shadow-lg flex items-center justify-between gap-4">
-              <div className="flex items-center gap-2 text-xs text-slate-300">
-                <Sparkles className="w-4 h-4 text-[#F5B942] shrink-0" />
+            <div className="mb-6 p-3 sm:p-4 rounded-2xl bg-white dark:bg-[#11182B] border border-[#CBD5E1] dark:border-[#202944] shadow-md flex items-center justify-between gap-4">
+              <div className="flex items-center gap-2.5 text-xs text-[#4A5568] dark:text-[#A5A9C3]">
+                <Sparkles className="w-4 h-4 text-[#E8BD68] shrink-0" />
                 <span>
-                  Viewing Reference Tab (<strong className="text-white capitalize">{currentTab}</strong>). The Mega Auction room is active in the background.
+                  Viewing Reference Tab (<strong className="text-[#0C1222] dark:text-[#F5F4FF] capitalize">{currentTab}</strong>). The Mega Auction war room is running live.
                 </span>
               </div>
               <button
                 onClick={() => setCurrentTab('auction')}
-                className="px-3.5 py-1.5 rounded-xl bg-[#F5B942] hover:bg-[#ffc95c] text-[#080D1A] text-xs font-black transition-colors cursor-pointer flex items-center gap-1.5 shrink-0"
+                className="px-3.5 py-1.5 rounded-xl bg-[#7C3AED] dark:bg-[#A78BFA] hover:bg-[#6D28D9] dark:hover:bg-[#9065F7] text-white dark:text-[#090D1B] text-xs font-black transition-colors cursor-pointer flex items-center gap-1.5 shrink-0 shadow-md"
               >
                 <span>Return to Auction Phase</span>
                 <ArrowRight className="w-3.5 h-3.5" />

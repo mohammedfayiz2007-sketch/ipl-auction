@@ -86,62 +86,62 @@ export const AuctionHistoryView: React.FC = () => {
   const leadingTeam = rankedTeams[0];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 text-[#F5F4FF]">
       {/* Header */}
       <div>
-        <h1 className="text-2xl lg:text-3xl font-extrabold text-white font-heading">
+        <h1 className="text-2xl lg:text-3xl font-extrabold text-[#F5F4FF] font-heading">
           Auction History & Leaderboards
         </h1>
-        <p className="text-sm text-slate-400 mt-1">
+        <p className="text-sm text-[#A5A9C3] mt-1">
           Historical records, championship standings, and franchise squad financial breakdowns.
         </p>
       </div>
 
       {/* CURRENT AUCTION LEADER / WINNER BANNER */}
       {leadingTeam && (
-        <div className="p-5 sm:p-6 rounded-3xl bg-gradient-to-r from-[#10192B] via-[#1a2842] to-[#10192B] border-2 border-[#F5B942]/70 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="p-5 sm:p-6 rounded-3xl bg-gradient-to-r from-[#171D35] via-[#202944] to-[#171D35] border-2 border-[#E8BD68]/70 shadow-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <div className="relative">
               <TeamEmblem code={leadingTeam.team.code} size="lg" />
-              <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-[#F5B942] text-[#080D1A] flex items-center justify-center font-black text-xs shadow">
-                <Crown className="w-3.5 h-3.5 text-[#080D1A]" />
+              <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-[#E8BD68] text-[#090D1B] flex items-center justify-center font-black text-xs shadow">
+                <Crown className="w-3.5 h-3.5 text-[#090D1B]" />
               </div>
             </div>
             <div>
-              <div className="flex items-center gap-2 text-xs font-bold text-[#F5B942] uppercase tracking-wider mb-0.5">
+              <div className="flex items-center gap-2 text-xs font-bold text-[#E8BD68] uppercase tracking-wider mb-0.5">
                 <Trophy className="w-3.5 h-3.5" />
                 <span>Current Auction Leader & Projected Winner</span>
               </div>
-              <h2 className="text-xl sm:text-2xl font-black text-white font-heading">
+              <h2 className="text-xl sm:text-2xl font-black text-[#F5F4FF] font-heading">
                 {leadingTeam.team.name}
               </h2>
-              <span className="text-xs text-slate-300">
-                Squad: <strong className="text-white">{leadingTeam.squadSize}/25</strong> · Marquee Stars: <strong className="text-[#F5B942]">{leadingTeam.marqueeCount}</strong> · Spent: <strong className="text-white">₹{leadingTeam.spent.toFixed(2)} Cr</strong>
+              <span className="text-xs text-[#A5A9C3]">
+                Squad: <strong className="text-[#F5F4FF]">{leadingTeam.squadSize}/25</strong> · Marquee Stars: <strong className="text-[#E8BD68]">{leadingTeam.marqueeCount}</strong> · Spent: <strong className="text-[#F5F4FF]">₹{leadingTeam.spent.toFixed(2)} Cr</strong>
               </span>
             </div>
           </div>
 
-          <div className="p-3.5 rounded-2xl bg-[#080D1A] border border-[#F5B942]/40 text-center min-w-[130px]">
-            <span className="text-[10px] text-slate-400 uppercase font-black tracking-wider block">
+          <div className="p-3.5 rounded-2xl bg-[#090D1B] border border-[#E8BD68]/40 text-center min-w-[130px] shadow-lg">
+            <span className="text-[10px] text-[#A5A9C3] uppercase font-black tracking-wider block">
               Squad Rating
             </span>
-            <span className="text-3xl font-black font-mono text-[#F5B942] tabular-nums">
+            <span className="text-3xl font-black font-mono text-[#E8BD68] tabular-nums">
               {leadingTeam.totalScore}
             </span>
-            <span className="text-[10px] text-slate-500 block">/ 100</span>
+            <span className="text-[10px] text-[#A5A9C3] block">/ 100</span>
           </div>
         </div>
       )}
 
       {/* TOP 5 RECORD SIGNINGS MARQUEE STRIP */}
-      <div className="p-6 rounded-3xl bg-[#10192B] border border-[#21304d]">
-        <h2 className="text-base font-bold text-white font-heading mb-4 flex items-center gap-2">
-          <Trophy className="w-4 h-4 text-[#F5B942]" />
+      <div className="p-6 rounded-3xl bg-[#171D35] border border-[#202944] shadow-xl">
+        <h2 className="text-base font-bold text-[#F5F4FF] font-heading mb-4 flex items-center gap-2">
+          <Trophy className="w-4 h-4 text-[#E8BD68]" />
           <span>Top 5 Record Buys of the 2027 Mega Auction</span>
         </h2>
 
         {topBuys.length === 0 ? (
-          <p className="text-xs text-slate-500 py-6 text-center italic">
+          <p className="text-xs text-[#A5A9C3] py-6 text-center italic">
             No completed purchases yet. Bid on marquee players in the Live Arena!
           </p>
         ) : (
@@ -152,20 +152,20 @@ export const AuctionHistoryView: React.FC = () => {
                 <div
                   key={player.id}
                   onClick={() => setInspectedPlayer(player)}
-                  className="p-4 rounded-2xl bg-[#080D1A] border border-[#21304d] hover:border-[#F5B942]/50 transition-all cursor-pointer text-center relative group"
+                  className="p-4 rounded-2xl bg-[#090D1B] border border-[#202944] hover:border-[#A78BFA]/50 transition-all cursor-pointer text-center relative group shadow-sm hover:-translate-y-0.5"
                 >
-                  <div className="absolute top-2 left-2 w-5 h-5 rounded-full bg-[#F5B942] text-[#080D1A] font-extrabold text-[10px] flex items-center justify-center font-mono">
+                  <div className="absolute top-2 left-2 w-5 h-5 rounded-full bg-[#E8BD68] text-[#090D1B] font-extrabold text-[10px] flex items-center justify-center font-mono">
                     #{idx + 1}
                   </div>
 
                   <PlayerAvatar player={player} size="md" className="mx-auto mb-2" />
-                  <h3 className="font-extrabold text-white text-xs truncate group-hover:text-[#F5B942] transition-colors">
+                  <h3 className="font-extrabold text-[#F5F4FF] text-xs truncate group-hover:text-[#A78BFA] transition-colors">
                     {player.name}
                   </h3>
 
                   <div className="mt-2 flex items-center justify-center gap-1.5">
                     {team && <TeamEmblem code={team.code} size="sm" />}
-                    <span className="text-xs font-mono font-bold text-[#F5B942] tabular-nums">
+                    <span className="text-xs font-mono font-bold text-[#E8BD68] tabular-nums">
                       {formatCrores(player.soldPrice || 0)}
                     </span>
                   </div>
@@ -177,15 +177,15 @@ export const AuctionHistoryView: React.FC = () => {
       </div>
 
       {/* FRANCHISE SPEND & PURSE TABLE */}
-      <div className="p-6 rounded-3xl bg-[#10192B] border border-[#21304d] overflow-x-auto">
-        <h2 className="text-base font-bold text-white font-heading mb-4 flex items-center gap-2">
-          <TrendingUp className="w-4 h-4 text-[#20C997]" />
+      <div className="p-6 rounded-3xl bg-[#171D35] border border-[#202944] overflow-x-auto shadow-xl">
+        <h2 className="text-base font-bold text-[#F5F4FF] font-heading mb-4 flex items-center gap-2">
+          <TrendingUp className="w-4 h-4 text-[#00D6D0]" />
           <span>Franchise Expenditure Summary</span>
         </h2>
 
         <table className="w-full text-xs text-left">
           <thead>
-            <tr className="border-b border-[#21304d] text-slate-400 font-semibold uppercase tracking-wider">
+            <tr className="border-b border-[#202944] text-[#A5A9C3] font-semibold uppercase tracking-wider">
               <th className="pb-3">Franchise</th>
               <th className="pb-3 text-center">Squad Size</th>
               <th className="pb-3 text-center">Overseas</th>
@@ -193,28 +193,28 @@ export const AuctionHistoryView: React.FC = () => {
               <th className="pb-3 text-right">Remaining Purse</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#21304d]/60 font-mono">
+          <tbody className="divide-y divide-[#202944] font-mono">
             {teams.map((t) => {
               const remaining = Number((t.totalPurse - t.spentPurse).toFixed(2));
               const squad = players.filter((p) => p.soldTo === t.id || t.retainedPlayers.includes(p.id));
               const overseas = squad.filter((p) => p.isOverseas).length;
 
               return (
-                <tr key={t.id} className="hover:bg-[#172338]/40 transition-colors">
-                  <td className="py-3 font-sans font-bold text-white flex items-center gap-2">
+                <tr key={t.id} className="hover:bg-[#202944]/40 transition-colors">
+                  <td className="py-3 font-sans font-bold text-[#F5F4FF] flex items-center gap-2">
                     <TeamEmblem code={t.code} size="sm" />
                     <span>{t.name}</span>
                   </td>
-                  <td className="py-3 text-center tabular-nums text-slate-300">
+                  <td className="py-3 text-center tabular-nums text-[#F5F4FF]">
                     {squad.length} / {t.maxSquad}
                   </td>
-                  <td className="py-3 text-center tabular-nums text-blue-400">
+                  <td className="py-3 text-center tabular-nums text-[#00D6D0]">
                     {overseas} / {t.maxOverseas}
                   </td>
-                  <td className="py-3 text-right tabular-nums text-slate-300">
+                  <td className="py-3 text-right tabular-nums text-[#A5A9C3]">
                     ₹{t.spentPurse.toFixed(2)} Cr
                   </td>
-                  <td className="py-3 text-right font-bold tabular-nums text-[#20C997]">
+                  <td className="py-3 text-right font-bold tabular-nums text-[#00D6D0]">
                     ₹{remaining.toFixed(2)} Cr
                   </td>
                 </tr>
@@ -225,19 +225,19 @@ export const AuctionHistoryView: React.FC = () => {
       </div>
 
       {/* COMPLETED DRAFT ROSTERS */}
-      <div className="p-6 rounded-3xl bg-[#10192B] border border-[#21304d] space-y-4">
+      <div className="p-6 rounded-3xl bg-[#171D35] border border-[#202944] space-y-4 shadow-xl">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <h2 className="text-base font-bold text-white font-heading flex items-center gap-2">
-            <Users className="w-4 h-4 text-blue-400" />
+          <h2 className="text-base font-bold text-[#F5F4FF] font-heading flex items-center gap-2">
+            <Users className="w-4 h-4 text-[#A78BFA]" />
             <span>Acquired Squad Rosters ({displayedPlayers.length} Players)</span>
           </h2>
 
           <div className="flex items-center gap-2 text-xs">
-            <span className="text-slate-400">Filter Team:</span>
+            <span className="text-[#A5A9C3]">Filter Team:</span>
             <select
               value={filterTeam}
               onChange={(e) => setFilterTeam(e.target.value)}
-              className="bg-[#080D1A] border border-[#21304d] rounded-lg px-2.5 py-1.5 text-white outline-none cursor-pointer"
+              className="bg-[#090D1B] border border-[#202944] rounded-lg px-2.5 py-1.5 text-[#F5F4FF] outline-none cursor-pointer focus:border-[#A78BFA]"
             >
               <option value="All">All 10 Franchises</option>
               {teams.map((t) => (
@@ -250,7 +250,7 @@ export const AuctionHistoryView: React.FC = () => {
         </div>
 
         {displayedPlayers.length === 0 ? (
-          <p className="text-xs text-slate-500 py-6 text-center italic">
+          <p className="text-xs text-[#A5A9C3] py-6 text-center italic">
             No players currently assigned under this filter.
           </p>
         ) : (
@@ -261,14 +261,14 @@ export const AuctionHistoryView: React.FC = () => {
                 <div
                   key={player.id}
                   onClick={() => setInspectedPlayer(player)}
-                  className="p-3 rounded-2xl bg-[#080D1A] border border-[#21304d] hover:border-slate-500 transition-colors cursor-pointer flex items-center gap-3"
+                  className="p-3 rounded-2xl bg-[#090D1B] border border-[#202944] hover:border-[#A78BFA]/50 transition-colors cursor-pointer flex items-center gap-3"
                 >
                   <PlayerAvatar player={player} size="sm" showRoleBadge />
                   <div className="min-w-0 flex-1">
-                    <span className="block text-xs font-bold text-white truncate">
+                    <span className="block text-xs font-bold text-[#F5F4FF] truncate">
                       {player.name}
                     </span>
-                    <span className="text-[11px] text-slate-400 block truncate">
+                    <span className="text-[11px] text-[#A5A9C3] block truncate">
                       {team?.code} · {formatCrores(player.soldPrice || 0)}
                     </span>
                   </div>

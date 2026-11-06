@@ -6,10 +6,11 @@
 import React, { useState } from 'react';
 import { useAuction } from '../../context/AuctionContext';
 import { loginWithGoogle, loginWithEmail, registerWithEmail, resetPassword } from '../../lib/firebase';
-import { Lock, Mail, User, ArrowRight, Check, AlertCircle, Sparkles, KeyRound } from 'lucide-react';
+import { Lock, Mail, User, ArrowRight, Check, AlertCircle, Sparkles, Shield, Zap, Radio } from 'lucide-react';
+import { TeamEmblem } from '../../components/TeamEmblem';
 
 export const AuthView: React.FC = () => {
-  const { user, updateUserName, loginUserSession } = useAuction();
+  const { user, updateUserName, loginUserSession, teams } = useAuction();
 
   const [mode, setMode] = useState<'signin' | 'register' | 'forgot'>('signin');
   const [email, setEmail] = useState('');
@@ -103,28 +104,107 @@ export const AuthView: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#080D1A] flex flex-col justify-center items-center p-4 sm:p-6 text-white relative overflow-hidden">
-      {/* Stadium glow ambiance */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[700px] bg-gradient-to-b from-[#F5B942]/10 via-[#4388FF]/5 to-transparent rounded-full blur-3xl pointer-events-none" />
+    <div className="min-h-screen bg-[#090D1B] text-[#F5F4FF] flex flex-col justify-center items-center p-4 sm:p-6 lg:p-12 relative overflow-hidden">
+      {/* Background Floodlights */}
+      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-[#A78BFA]/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-[#00D6D0]/10 rounded-full blur-[120px] pointer-events-none" />
 
-      <div className="w-full max-w-md relative z-10">
-        {/* Brand Header */}
-        <div className="text-center mb-8">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#F5B942] to-[#D19B20] text-[#080D1A] flex items-center justify-center text-2xl font-extrabold mx-auto mb-3 shadow-xl shadow-[#F5B942]/20">
-            🏏
+      {/* Split-Screen Container */}
+      <div className="w-full max-w-5xl rounded-3xl bg-[#11182B] border border-[#202944] shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-12 relative z-10 backdrop-blur-md">
+        
+        {/* LEFT COLUMN: Luxury Sports Technology Showcase */}
+        <div className="lg:col-span-6 bg-gradient-to-br from-[#171D35] via-[#11182B] to-[#090D1B] p-8 sm:p-12 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-[#202944] relative overflow-hidden">
+          {/* Subtle decorative stadium grid */}
+          <div
+            className="absolute inset-0 opacity-[0.04] pointer-events-none"
+            style={{
+              backgroundImage: `radial-gradient(rgba(245, 244, 255, 0.5) 1px, transparent 1px)`,
+              backgroundSize: '24px 24px',
+            }}
+          />
+
+          <div>
+            {/* Brand Logo & Emblem */}
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#E8BD68] to-[#cba04a] text-[#090D1B] flex items-center justify-center font-extrabold text-xl shadow-lg shadow-[#E8BD68]/20 ring-1 ring-[#E8BD68]/50">
+                🏏
+              </div>
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-[#E8BD68] block">
+                  OFFICIAL AUCTION PORTAL
+                </span>
+                <span className="font-heading font-extrabold text-lg text-[#F5F4FF] tracking-tight">
+                  IPL AUCTION ARENA 2027
+                </span>
+              </div>
+            </div>
+
+            {/* Tagline & Pitch */}
+            <h2 className="text-3xl sm:text-4xl font-extrabold font-heading text-[#F5F4FF] leading-tight tracking-tight mt-6">
+              BUILD YOUR TEAM.{' '}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#A78BFA] via-[#00D6D0] to-[#E8BD68]">
+                OWN THE AUCTION.
+              </span>
+            </h2>
+
+            <p className="mt-4 text-sm text-[#A5A9C3] leading-relaxed">
+              Step into the executive war room. Authenticate your franchise credentials to unlock real-time bidding,
+              BCCI squad governance, and multi-user live room synchronization.
+            </p>
+
+            {/* Feature Bullets */}
+            <div className="mt-8 space-y-3.5">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-[#A78BFA]/10 border border-[#A78BFA]/20 flex items-center justify-center text-[#A78BFA] shrink-0">
+                  <Zap className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-[#F5F4FF]">Real-Time Firebase Cloud Engine</h4>
+                  <p className="text-[11px] text-[#A5A9C3]">Sub-millisecond bid synchronization across all tables.</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-[#00D6D0]/10 border border-[#00D6D0]/20 flex items-center justify-center text-[#00D6D0] shrink-0">
+                  <Shield className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-[#F5F4FF]">Official BCCI Retention & RTM Tiers</h4>
+                  <p className="text-[11px] text-[#A5A9C3]">₹18 Cr, ₹14 Cr, ₹11 Cr, ₹4 Cr contract caps enforced.</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-[#E8BD68]/10 border border-[#E8BD68]/20 flex items-center justify-center text-[#E8BD68] shrink-0">
+                  <Radio className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-[#F5F4FF]">Broadcast-Grade Live Arena</h4>
+                  <p className="text-[11px] text-[#A5A9C3]">15s countdown timer, audio gavel, and live statistics.</p>
+                </div>
+              </div>
+            </div>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight font-heading">
-            IPL AUCTION ARENA <span className="text-[#F5B942]">2027</span>
-          </h1>
-          <p className="text-xs text-slate-400 mt-1">
-            BCCI Official Multiplayer Mega Auction War Room Portal
-          </p>
+
+          {/* Franchise Mini Bar */}
+          <div className="mt-8 pt-6 border-t border-[#202944]">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[#A5A9C3] block mb-2.5">
+              10 Official Franchises Standing By
+            </span>
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+              {teams.slice(0, 8).map((t) => (
+                <div key={t.id} title={t.name} className="shrink-0 p-1 rounded-lg bg-[#202944]/50 border border-[#202944]">
+                  <TeamEmblem code={t.code} size="xs" />
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
-        {/* Auth Card */}
-        <div className="p-6 sm:p-8 rounded-3xl bg-[#10192B] border border-[#21304d] shadow-2xl backdrop-blur">
+        {/* RIGHT COLUMN: Authentication Forms */}
+        <div className="lg:col-span-6 p-8 sm:p-12 flex flex-col justify-center bg-[#090D1B]">
           {/* Mode Switcher */}
-          <div className="flex items-center gap-1 p-1 rounded-xl bg-[#080D1A] border border-[#21304d] mb-6">
+          <div className="flex items-center gap-1 p-1 rounded-xl bg-[#11182B] border border-[#202944] mb-6">
             <button
               type="button"
               onClick={() => {
@@ -134,8 +214,8 @@ export const AuthView: React.FC = () => {
               }}
               className={`flex-1 py-2 text-xs font-bold rounded-lg transition-colors cursor-pointer ${
                 mode === 'signin'
-                  ? 'bg-[#172338] text-white shadow-sm'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-[#A78BFA] text-[#090D1B] shadow-sm font-extrabold'
+                  : 'text-[#A5A9C3] hover:text-[#F5F4FF]'
               }`}
             >
               Sign In
@@ -149,8 +229,8 @@ export const AuthView: React.FC = () => {
               }}
               className={`flex-1 py-2 text-xs font-bold rounded-lg transition-colors cursor-pointer ${
                 mode === 'register'
-                  ? 'bg-[#172338] text-white shadow-sm'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-[#A78BFA] text-[#090D1B] shadow-sm font-extrabold'
+                  : 'text-[#A5A9C3] hover:text-[#F5F4FF]'
               }`}
             >
               Register
@@ -164,8 +244,8 @@ export const AuthView: React.FC = () => {
               }}
               className={`flex-1 py-2 text-xs font-bold rounded-lg transition-colors cursor-pointer ${
                 mode === 'forgot'
-                  ? 'bg-[#172338] text-white shadow-sm'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-[#A78BFA] text-[#090D1B] shadow-sm font-extrabold'
+                  : 'text-[#A5A9C3] hover:text-[#F5F4FF]'
               }`}
             >
               Reset
@@ -174,14 +254,14 @@ export const AuthView: React.FC = () => {
 
           {/* Feedback alerts */}
           {errorMsg && (
-            <div className="p-3.5 mb-4 rounded-xl bg-[#FF5263]/15 border border-[#FF5263] text-white text-xs font-medium flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 text-[#FF5263] shrink-0" />
+            <div className="p-3.5 mb-4 rounded-xl bg-[#FF5C75]/15 border border-[#FF5C75] text-[#F5F4FF] text-xs font-medium flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 text-[#FF5C75] shrink-0" />
               <span>{errorMsg}</span>
             </div>
           )}
 
           {successMsg && (
-            <div className="p-3.5 mb-4 rounded-xl bg-[#20C997]/15 border border-[#20C997] text-white text-xs font-medium flex items-center gap-2">
+            <div className="p-3.5 mb-4 rounded-xl bg-[#20C997]/15 border border-[#20C997] text-[#F5F4FF] text-xs font-medium flex items-center gap-2">
               <Check className="w-4 h-4 text-[#20C997] shrink-0" />
               <span>{successMsg}</span>
             </div>
@@ -194,7 +274,7 @@ export const AuthView: React.FC = () => {
                 type="button"
                 onClick={handleGoogleAuth}
                 disabled={loading}
-                className="w-full py-3 px-4 rounded-xl bg-[#080D1A] hover:bg-[#172338] border border-[#21304d] text-slate-200 text-xs font-bold transition-all flex items-center justify-center gap-2.5 cursor-pointer hover:border-slate-500 mb-5"
+                className="w-full py-3 px-4 rounded-xl bg-[#171D35] hover:bg-[#202944] border border-[#202944] hover:border-[#A78BFA]/50 text-[#F5F4FF] text-xs font-bold transition-all flex items-center justify-center gap-2.5 cursor-pointer shadow-md mb-5"
               >
                 <svg className="w-4 h-4" viewBox="0 0 24 24">
                   <path
@@ -218,8 +298,8 @@ export const AuthView: React.FC = () => {
               </button>
 
               <div className="relative flex items-center justify-center mb-5">
-                <div className="border-t border-[#21304d] w-full" />
-                <span className="bg-[#10192B] px-3 text-[10px] uppercase font-bold text-slate-500 tracking-wider">
+                <div className="border-t border-[#202944] w-full" />
+                <span className="bg-[#090D1B] px-3 text-[10px] uppercase font-bold text-[#A5A9C3] tracking-wider">
                   Or with email
                 </span>
               </div>
@@ -230,17 +310,17 @@ export const AuthView: React.FC = () => {
           <form onSubmit={handleEmailAuth} className="space-y-4">
             {mode === 'register' && (
               <div>
-                <label className="text-xs text-slate-400 block mb-1.5 font-medium">
+                <label className="text-xs text-[#A5A9C3] block mb-1.5 font-medium">
                   Franchise Director Name
                 </label>
                 <div className="relative">
-                  <User className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <User className="w-4 h-4 text-[#A5A9C3] absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <input
                     type="text"
                     value={displayName}
                     onChange={(e) => setDisplayName(e.target.value)}
                     placeholder="e.g. Parth Jindal"
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#080D1A] border border-[#21304d] text-xs text-white focus:border-[#F5B942] outline-none transition-colors"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#11182B] border border-[#202944] text-xs text-[#F5F4FF] focus:border-[#A78BFA] outline-none transition-colors"
                     required
                   />
                 </div>
@@ -248,15 +328,15 @@ export const AuthView: React.FC = () => {
             )}
 
             <div>
-              <label className="text-xs text-slate-400 block mb-1.5 font-medium">Email Address</label>
+              <label className="text-xs text-[#A5A9C3] block mb-1.5 font-medium">Email Address</label>
               <div className="relative">
-                <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <Mail className="w-4 h-4 text-[#A5A9C3] absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="director@iplfranchise.com"
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#080D1A] border border-[#21304d] text-xs text-white focus:border-[#F5B942] outline-none transition-colors"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#11182B] border border-[#202944] text-xs text-[#F5F4FF] focus:border-[#A78BFA] outline-none transition-colors"
                   required
                 />
               </div>
@@ -264,15 +344,15 @@ export const AuthView: React.FC = () => {
 
             {mode !== 'forgot' && (
               <div>
-                <label className="text-xs text-slate-400 block mb-1.5 font-medium">Password</label>
+                <label className="text-xs text-[#A5A9C3] block mb-1.5 font-medium">Password</label>
                 <div className="relative">
-                  <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <Lock className="w-4 h-4 text-[#A5A9C3] absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <input
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••••••"
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#080D1A] border border-[#21304d] text-xs text-white focus:border-[#F5B942] outline-none transition-colors"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#11182B] border border-[#202944] text-xs text-[#F5F4FF] focus:border-[#A78BFA] outline-none transition-colors"
                     required
                   />
                 </div>
@@ -282,7 +362,7 @@ export const AuthView: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-xl bg-[#F5B942] hover:bg-[#ffc95c] text-[#080D1A] font-extrabold text-xs shadow-lg shadow-[#F5B942]/20 transition-all flex items-center justify-center gap-2 cursor-pointer mt-2 disabled:opacity-50"
+              className="w-full py-3 rounded-xl bg-[#A78BFA] hover:bg-[#b8a1fb] text-[#090D1B] font-extrabold text-xs shadow-lg shadow-[#A78BFA]/20 transition-all flex items-center justify-center gap-2 cursor-pointer mt-2 disabled:opacity-50"
             >
               <span>
                 {loading
@@ -303,7 +383,7 @@ export const AuthView: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setMode('forgot')}
-                className="text-xs text-slate-400 hover:text-[#F5B942] transition-colors cursor-pointer"
+                className="text-xs text-[#A5A9C3] hover:text-[#A78BFA] transition-colors cursor-pointer"
               >
                 Forgot your password?
               </button>
@@ -311,7 +391,7 @@ export const AuthView: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setMode('signin')}
-                className="text-xs text-slate-400 hover:text-[#F5B942] transition-colors cursor-pointer"
+                className="text-xs text-[#A5A9C3] hover:text-[#A78BFA] transition-colors cursor-pointer"
               >
                 Already have an account? Sign In
               </button>
@@ -319,7 +399,7 @@ export const AuthView: React.FC = () => {
           </div>
 
           {/* Instant Evaluation / Demo Login option */}
-          <div className="mt-4 pt-4 border-t border-[#21304d] text-center">
+          <div className="mt-5 pt-5 border-t border-[#202944] text-center">
             <button
               type="button"
               onClick={() => {
@@ -332,13 +412,14 @@ export const AuthView: React.FC = () => {
                 };
                 loginUserSession(demoUser);
               }}
-              className="text-xs font-semibold text-[#20C997] hover:text-emerald-400 cursor-pointer flex items-center justify-center gap-1.5 mx-auto py-1"
+              className="text-xs font-semibold text-[#00D6D0] hover:text-[#00D6D0]/80 cursor-pointer flex items-center justify-center gap-1.5 mx-auto py-1"
             >
               <Sparkles className="w-3.5 h-3.5" />
               <span>Instant Enter as Franchise Director (Demo / QA Mode)</span>
             </button>
           </div>
         </div>
+
       </div>
     </div>
   );

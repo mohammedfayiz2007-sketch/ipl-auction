@@ -63,7 +63,6 @@ export const RetentionReleaseView: React.FC = () => {
   // STABLE, STRICT TEAM-WISE CANDIDATES:
   // When CSK is selected -> ONLY CSK players.
   // When MI is selected -> ONLY MI players.
-  // Never display another team's players in the selected team's retention section.
   const candidatePlayers = useMemo(() => {
     return players.filter(
       (p) =>
@@ -136,20 +135,20 @@ export const RetentionReleaseView: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 text-[#F5F4FF]">
       {/* Toast Alert */}
       {notification && (
         <div
-          className={`p-4 rounded-2xl flex items-center gap-3 border shadow-lg animate-in slide-in-from-top-2 ${
+          className={`p-4 rounded-2xl flex items-center gap-3 border shadow-xl animate-in slide-in-from-top-2 ${
             notification.type === 'success'
-              ? 'bg-[#20C997]/15 border-[#20C997] text-white'
-              : 'bg-[#FF5263]/15 border-[#FF5263] text-white'
+              ? 'bg-[#20C997]/20 border-[#20C997] text-[#F5F4FF]'
+              : 'bg-[#FF5C75]/20 border-[#FF5C75] text-[#F5F4FF]'
           }`}
         >
           {notification.type === 'success' ? (
             <CheckCircle className="w-5 h-5 text-[#20C997] shrink-0" />
           ) : (
-            <AlertCircle className="w-5 h-5 text-[#FF5263] shrink-0" />
+            <AlertCircle className="w-5 h-5 text-[#FF5C75] shrink-0" />
           )}
           <span className="text-xs font-semibold">{notification.message}</span>
         </div>
@@ -158,21 +157,21 @@ export const RetentionReleaseView: React.FC = () => {
       {/* Header and Franchise Selector */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl lg:text-3xl font-extrabold text-white font-heading">
+          <h1 className="text-2xl lg:text-3xl font-extrabold text-[#F5F4FF] font-heading">
             Squad Retention & Release Desk
           </h1>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-[#A5A9C3] mt-1">
             Official BCCI retention limits: Max 6 retentions per franchise with structured purse deductions.
           </p>
-          <div className="mt-2 inline-block px-3 py-1 rounded-lg bg-blue-500/10 border border-blue-500/30 text-[11px] text-blue-300">
-            ℹ️ Initial 2026 baseline roster for IPL 2027 simulation game. Not final confirmed 2027 squads.
+          <div className="mt-2 inline-block px-3 py-1 rounded-lg bg-[#202944] border border-[#202944] text-[11px] text-[#00D6D0]">
+            ℹ️ Initial 2026 baseline roster for IPL 2027 simulation game.
           </div>
         </div>
 
         <div className="flex items-center gap-3">
           <button
             onClick={() => setCurrentTab('auction')}
-            className="px-4 py-2.5 rounded-xl bg-[#F5B942] hover:bg-[#ffc95c] text-[#080D1A] font-extrabold text-xs shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
+            className="px-5 py-2.5 rounded-xl bg-[#A78BFA] hover:bg-[#b8a1fb] text-[#090D1B] font-extrabold text-xs shadow-lg shadow-[#A78BFA]/20 transition-all flex items-center gap-1.5 cursor-pointer"
           >
             <span>Enter Live Auction Arena</span>
             <ArrowRight className="w-4 h-4" />
@@ -181,8 +180,8 @@ export const RetentionReleaseView: React.FC = () => {
       </div>
 
       {/* 10 TEAMS SELECTOR STRIP */}
-      <div className="p-3.5 rounded-2xl bg-[#10192B] border border-[#21304d]">
-        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-2">
+      <div className="p-4 rounded-2xl bg-[#171D35] border border-[#202944] shadow-lg">
+        <span className="text-[10px] font-bold uppercase tracking-wider text-[#A5A9C3] block mb-2.5">
           Select Franchise to View & Retain Players (10 IPL Teams)
         </span>
         <div className="flex flex-wrap gap-2">
@@ -198,17 +197,17 @@ export const RetentionReleaseView: React.FC = () => {
                   setUserTeam(t.id);
                   setSelectedPlayerIds([]);
                 }}
-                className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
+                className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
                   isCurrent
-                    ? 'bg-[#F5B942] text-[#080D1A] shadow-md font-extrabold scale-105'
-                    : 'bg-[#172338] text-slate-300 hover:text-white hover:bg-[#1f2f4a] border border-[#21304d]'
+                    ? 'bg-[#A78BFA] text-[#090D1B] shadow-md font-extrabold scale-105'
+                    : 'bg-[#202944] text-[#A5A9C3] hover:text-[#F5F4FF] hover:bg-[#202944]/80 border border-[#202944]'
                 }`}
               >
                 <TeamEmblem code={t.code} size="xs" />
                 <span>{t.code}</span>
                 <span
                   className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
-                    isCurrent ? 'bg-black/20 text-[#080D1A]' : 'bg-black/40 text-slate-400'
+                    isCurrent ? 'bg-black/25 text-[#090D1B]' : 'bg-black/40 text-[#A5A9C3]'
                   }`}
                 >
                   {count}/6
@@ -220,54 +219,54 @@ export const RetentionReleaseView: React.FC = () => {
       </div>
 
       {/* SUMMARY BANNER */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-5 rounded-3xl bg-[#10192B] border border-[#21304d]">
-        <div className="p-3 rounded-2xl bg-[#080D1A] border border-[#21304d]">
-          <span className="text-xs text-slate-400 block mb-0.5">Retained Players</span>
-          <span className="text-2xl font-extrabold font-mono text-[#F5B942] tabular-nums">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-5 rounded-3xl bg-[#171D35] border border-[#202944] shadow-xl">
+        <div className="p-3.5 rounded-2xl bg-[#090D1B] border border-[#202944]">
+          <span className="text-xs text-[#A5A9C3] block mb-0.5">Retained Players</span>
+          <span className="text-2xl font-extrabold font-mono text-[#E8BD68] tabular-nums">
             {currentTeam.retainedPlayers.length} / 6 Max
           </span>
-          <span className="text-[10px] text-slate-400 block mt-0.5">
+          <span className="text-[10px] text-[#A5A9C3] block mt-0.5">
             {remainingSlots} retention slots available
           </span>
         </div>
 
-        <div className="p-3 rounded-2xl bg-[#080D1A] border border-[#21304d]">
-          <span className="text-xs text-slate-400 block mb-0.5">Remaining Purse</span>
-          <span className="text-2xl font-extrabold font-mono text-[#20C997] tabular-nums">
+        <div className="p-3.5 rounded-2xl bg-[#090D1B] border border-[#202944]">
+          <span className="text-xs text-[#A5A9C3] block mb-0.5">Remaining Purse</span>
+          <span className="text-2xl font-extrabold font-mono text-[#00D6D0] tabular-nums">
             ₹{remainingPurse.toFixed(2)} Cr
           </span>
-          <span className="text-[10px] text-slate-400 block mt-0.5">
+          <span className="text-[10px] text-[#A5A9C3] block mt-0.5">
             Initial: ₹{currentTeam.totalPurse.toFixed(2)} Cr
           </span>
         </div>
 
-        <div className="p-3 rounded-2xl bg-[#080D1A] border border-[#21304d]">
-          <span className="text-xs text-slate-400 block mb-0.5">Retention Deductions</span>
-          <span className="text-2xl font-extrabold font-mono text-[#FF5263] tabular-nums">
+        <div className="p-3.5 rounded-2xl bg-[#090D1B] border border-[#202944]">
+          <span className="text-xs text-[#A5A9C3] block mb-0.5">Retention Deductions</span>
+          <span className="text-2xl font-extrabold font-mono text-[#FF5C75] tabular-nums">
             ₹{currentTeam.spentPurse.toFixed(2)} Cr
           </span>
-          <span className="text-[10px] text-slate-400 block mt-0.5">
+          <span className="text-[10px] text-[#A5A9C3] block mt-0.5">
             Purse deducted before auction
           </span>
         </div>
 
-        <div className="p-3 rounded-2xl bg-[#080D1A] border border-[#21304d]">
-          <span className="text-xs text-slate-400 block mb-0.5">Next Retention Tier</span>
-          <span className="text-xl font-extrabold font-mono text-blue-400 tabular-nums">
+        <div className="p-3.5 rounded-2xl bg-[#090D1B] border border-[#202944]">
+          <span className="text-xs text-[#A5A9C3] block mb-0.5">Next Retention Tier</span>
+          <span className="text-xl font-extrabold font-mono text-[#A78BFA] tabular-nums">
             ₹{nextTier.cost.toFixed(2)} Cr
           </span>
-          <span className="text-[10px] text-slate-400 block mt-0.5 truncate">
+          <span className="text-[10px] text-[#A5A9C3] block mt-0.5 truncate">
             {nextTier.label}
           </span>
         </div>
       </div>
 
       {/* RETENTION RULES BREAKDOWN STRIP */}
-      <div className="p-4 rounded-2xl bg-[#10192B]/70 border border-[#21304d] text-xs text-slate-300 flex flex-wrap items-center justify-between gap-3">
+      <div className="p-4 rounded-2xl bg-[#171D35] border border-[#202944] text-xs text-[#A5A9C3] flex flex-wrap items-center justify-between gap-3 shadow-md">
         <div className="flex items-center gap-2">
-          <HelpCircle className="w-4 h-4 text-[#F5B942] shrink-0" />
+          <HelpCircle className="w-4 h-4 text-[#E8BD68] shrink-0" />
           <span>
-            <strong>BCCI Retention Tier Scale:</strong> Slot 1 (₹18 Cr) · Slot 2 (₹14 Cr) · Slot 3 (₹11 Cr) · Slot 4 (₹18 Cr) · Slot 5 (₹14 Cr) · Uncapped (₹4 Cr).
+            <strong className="text-[#F5F4FF]">BCCI Retention Tier Scale:</strong> Slot 1 (₹18 Cr) · Slot 2 (₹14 Cr) · Slot 3 (₹11 Cr) · Slot 4 (₹18 Cr) · Slot 5 (₹14 Cr) · Uncapped (₹4 Cr).
           </span>
         </div>
       </div>
@@ -277,18 +276,18 @@ export const RetentionReleaseView: React.FC = () => {
         {/* CURRENT SQUAD (Can Release) */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-base font-bold text-white font-heading flex items-center gap-2">
-              <UserCheck className="w-4 h-4 text-[#20C997]" />
+            <h2 className="text-base font-bold text-[#F5F4FF] font-heading flex items-center gap-2">
+              <UserCheck className="w-4 h-4 text-[#00D6D0]" />
               <span>
                 Retained {currentTeam.name} Squad ({squadPlayers.length} / 6)
               </span>
             </h2>
-            <span className="text-xs text-slate-400">{remainingSlots} slots left</span>
+            <span className="text-xs text-[#A5A9C3]">{remainingSlots} slots left</span>
           </div>
 
           {squadPlayers.length === 0 ? (
-            <div className="p-8 text-center rounded-2xl bg-[#10192B] border border-[#21304d]">
-              <p className="text-xs text-slate-400">
+            <div className="p-8 text-center rounded-2xl bg-[#171D35] border border-[#202944]">
+              <p className="text-xs text-[#A5A9C3]">
                 No players currently retained for {currentTeam.name}. Retain key candidates from the right panel!
               </p>
             </div>
@@ -299,7 +298,7 @@ export const RetentionReleaseView: React.FC = () => {
                 return (
                   <div
                     key={player.id}
-                    className="p-3.5 rounded-2xl bg-[#10192B] border border-[#21304d] flex items-center justify-between gap-3 hover:border-slate-500 transition-colors"
+                    className="p-3.5 rounded-2xl bg-[#171D35] border border-[#202944] flex items-center justify-between gap-3 hover:border-[#A78BFA]/50 transition-colors shadow-sm"
                   >
                     <div
                       onClick={() => setInspectedPlayer(player)}
@@ -308,14 +307,14 @@ export const RetentionReleaseView: React.FC = () => {
                       <PlayerAvatar player={player} size="sm" showRoleBadge />
                       <div className="min-w-0">
                         <div className="flex items-center gap-1.5">
-                          <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-800 text-slate-300 font-bold">
+                          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#202944] text-[#E8BD68] font-bold">
                             Slot {idx + 1}
                           </span>
-                          <span className="block text-sm font-bold text-white truncate hover:text-[#F5B942] transition-colors">
+                          <span className="block text-sm font-bold text-[#F5F4FF] truncate hover:text-[#A78BFA] transition-colors">
                             {player.name}
                           </span>
                         </div>
-                        <span className="text-xs text-slate-400">
+                        <span className="text-xs text-[#A5A9C3]">
                           {player.role} · {player.country} {player.isOverseas ? '✈️' : '🇮🇳'}
                         </span>
                       </div>
@@ -323,15 +322,15 @@ export const RetentionReleaseView: React.FC = () => {
 
                     <div className="flex items-center gap-3 shrink-0">
                       <div className="text-right">
-                        <span className="text-[10px] text-slate-400 block">Deduction</span>
-                        <span className="text-xs font-mono font-bold text-[#F5B942] tabular-nums">
+                        <span className="text-[10px] text-[#A5A9C3] block">Deduction</span>
+                        <span className="text-xs font-mono font-bold text-[#E8BD68] tabular-nums">
                           ₹{tier.cost.toFixed(2)} Cr
                         </span>
                       </div>
 
                       <button
                         onClick={() => handleRelease(player)}
-                        className="px-3 py-1.5 rounded-xl bg-[#172338] hover:bg-[#FF5263] text-slate-300 hover:text-white font-bold text-xs border border-[#21304d] hover:border-[#FF5263] transition-colors flex items-center gap-1 cursor-pointer"
+                        className="px-3 py-1.5 rounded-xl bg-[#202944] hover:bg-[#FF5C75] text-[#A5A9C3] hover:text-[#F5F4FF] font-bold text-xs border border-[#202944] hover:border-[#FF5C75] transition-colors flex items-center gap-1 cursor-pointer"
                       >
                         <UserX className="w-3.5 h-3.5" />
                         <span>Release</span>
@@ -348,11 +347,11 @@ export const RetentionReleaseView: React.FC = () => {
         <div className="space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div>
-              <h2 className="text-base font-bold text-white font-heading flex items-center gap-2">
-                <UserCheck className="w-4 h-4 text-[#F5B942]" />
+              <h2 className="text-base font-bold text-[#F5F4FF] font-heading flex items-center gap-2">
+                <UserCheck className="w-4 h-4 text-[#E8BD68]" />
                 <span>Available {currentTeam.code} Candidates ({candidatePlayers.length})</span>
               </h2>
-              <span className="text-xs text-slate-400">
+              <span className="text-xs text-[#A5A9C3]">
                 Next Slot: ₹{nextTier.cost} Cr · Strictly {currentTeam.name} roster
               </span>
             </div>
@@ -362,14 +361,14 @@ export const RetentionReleaseView: React.FC = () => {
                 <>
                   <button
                     onClick={handleSelectMax}
-                    className="text-[11px] text-[#F5B942] hover:underline cursor-pointer font-semibold"
+                    className="text-[11px] text-[#A78BFA] hover:text-[#b8a1fb] cursor-pointer font-semibold"
                   >
                     Select Max ({remainingSlots})
                   </button>
                   {selectedPlayerIds.length > 0 && (
                     <button
                       onClick={handleClearSelect}
-                      className="text-[11px] text-slate-400 hover:text-white cursor-pointer"
+                      className="text-[11px] text-[#A5A9C3] hover:text-[#F5F4FF] cursor-pointer"
                     >
                       Clear
                     </button>
@@ -381,13 +380,13 @@ export const RetentionReleaseView: React.FC = () => {
 
           {/* BATCH RETAIN BAR */}
           {selectedPlayerIds.length > 0 && (
-            <div className="p-3 rounded-2xl bg-gradient-to-r from-[#172338] to-[#10192B] border border-[#F5B942] flex items-center justify-between gap-3 animate-in fade-in">
-              <span className="text-xs text-white font-semibold">
-                Selected: <strong className="text-[#F5B942] font-mono">{selectedPlayerIds.length}</strong> player(s)
+            <div className="p-3 rounded-2xl bg-gradient-to-r from-[#202944] to-[#171D35] border border-[#A78BFA] flex items-center justify-between gap-3 animate-in fade-in shadow-lg">
+              <span className="text-xs text-[#F5F4FF] font-semibold">
+                Selected: <strong className="text-[#E8BD68] font-mono">{selectedPlayerIds.length}</strong> player(s)
               </span>
               <button
                 onClick={handleBatchRetain}
-                className="px-4 py-2 rounded-xl bg-[#F5B942] hover:bg-[#ffc95c] text-[#080D1A] font-extrabold text-xs shadow-md transition-all cursor-pointer flex items-center gap-1.5"
+                className="px-4 py-2 rounded-xl bg-[#A78BFA] hover:bg-[#b8a1fb] text-[#090D1B] font-extrabold text-xs shadow-md transition-all cursor-pointer flex items-center gap-1.5"
               >
                 <UserCheck className="w-4 h-4" />
                 <span>Retain Selected ({selectedPlayerIds.length})</span>
@@ -396,14 +395,14 @@ export const RetentionReleaseView: React.FC = () => {
           )}
 
           {remainingSlots === 0 ? (
-            <div className="p-8 text-center rounded-2xl bg-[#10192B] border border-[#21304d]">
-              <p className="text-xs text-[#20C997] font-semibold">
+            <div className="p-8 text-center rounded-2xl bg-[#171D35] border border-[#202944]">
+              <p className="text-xs text-[#00D6D0] font-semibold">
                 Maximum 6 retentions reached for {currentTeam.name}. Remaining players will enter the live auction pool!
               </p>
             </div>
           ) : candidatePlayers.length === 0 ? (
-            <div className="p-8 text-center rounded-2xl bg-[#10192B] border border-[#21304d]">
-              <p className="text-xs text-slate-400">
+            <div className="p-8 text-center rounded-2xl bg-[#171D35] border border-[#202944]">
+              <p className="text-xs text-[#A5A9C3]">
                 All available {currentTeam.name} players have been retained.
               </p>
             </div>
@@ -417,8 +416,8 @@ export const RetentionReleaseView: React.FC = () => {
                     key={player.id}
                     className={`p-3.5 rounded-2xl border transition-all flex items-center justify-between gap-3 ${
                       isChecked
-                        ? 'bg-[#172338] border-[#F5B942]'
-                        : 'bg-[#10192B] border-[#21304d] hover:border-slate-500'
+                        ? 'bg-[#202944] border-[#A78BFA]'
+                        : 'bg-[#171D35] border-[#202944] hover:border-[#A78BFA]/50'
                     }`}
                   >
                     {/* Checkbox */}
@@ -426,7 +425,7 @@ export const RetentionReleaseView: React.FC = () => {
                       type="checkbox"
                       checked={isChecked}
                       onChange={() => handleToggleSelect(player.id)}
-                      className="w-4 h-4 rounded text-[#F5B942] focus:ring-0 focus:ring-offset-0 bg-[#080D1A] border-[#21304d] cursor-pointer"
+                      className="w-4 h-4 rounded text-[#A78BFA] focus:ring-0 focus:ring-offset-0 bg-[#090D1B] border-[#202944] cursor-pointer"
                     />
 
                     {/* Player Info */}
@@ -437,19 +436,19 @@ export const RetentionReleaseView: React.FC = () => {
                       <PlayerAvatar player={player} size="sm" showRoleBadge />
                       <div className="min-w-0">
                         <div className="flex items-center gap-1.5">
-                          <span className="block text-sm font-bold text-white truncate hover:text-[#F5B942] transition-colors">
+                          <span className="block text-sm font-bold text-[#F5F4FF] truncate hover:text-[#A78BFA] transition-colors">
                             {player.name}
                           </span>
                           {player.marquee && (
-                            <span className="text-[10px] text-[#F5B942] font-black">★</span>
+                            <span className="text-[10px] text-[#E8BD68] font-black">★</span>
                           )}
                         </div>
-                        <div className="flex items-center gap-2 text-xs text-slate-400">
+                        <div className="flex items-center gap-2 text-xs text-[#A5A9C3]">
                           <span>{player.role}</span>
                           <span>·</span>
                           <span>{player.country}</span>
                           <span>·</span>
-                          <span className="text-[#F5B942] font-mono text-[11px]">
+                          <span className="text-[#00D6D0] font-mono text-[11px]">
                             Simulated Base: ₹{player.basePrice} Cr
                           </span>
                         </div>
@@ -461,7 +460,7 @@ export const RetentionReleaseView: React.FC = () => {
                       <button
                         onClick={() => handleRetainSingle(player)}
                         disabled={remainingPurse < nextTier.cost}
-                        className="px-3.5 py-1.5 rounded-xl bg-[#F5B942] hover:bg-[#ffc95c] disabled:opacity-40 text-[#080D1A] font-extrabold text-xs shadow transition-all cursor-pointer flex items-center gap-1"
+                        className="px-3.5 py-1.5 rounded-xl bg-[#202944] hover:bg-[#A78BFA] text-[#F5F4FF] hover:text-[#090D1B] disabled:opacity-40 font-extrabold text-xs border border-[#202944] hover:border-[#A78BFA] shadow transition-all cursor-pointer flex items-center gap-1"
                         title={`Retain ${player.name} for ₹${nextTier.cost} Cr`}
                       >
                         <UserCheck className="w-3.5 h-3.5" />
@@ -477,12 +476,12 @@ export const RetentionReleaseView: React.FC = () => {
       </div>
 
       {/* Confirmation Card */}
-      <div className="p-6 rounded-3xl bg-[#10192B] border border-[#21304d] flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="p-6 rounded-3xl bg-[#171D35] border border-[#202944] flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
         <div>
-          <span className="text-sm font-bold text-white block">
+          <span className="text-sm font-bold text-[#F5F4FF] block">
             Lock & Verify {currentTeam.name} Retention Decisions
           </span>
-          <span className="text-xs text-slate-400">
+          <span className="text-xs text-[#A5A9C3]">
             {squadPlayers.length} player(s) retained · Remaining auction purse: ₹{remainingPurse.toFixed(2)} Cr
           </span>
         </div>
@@ -490,7 +489,7 @@ export const RetentionReleaseView: React.FC = () => {
         <div className="flex items-center gap-3">
           <button
             onClick={handleLockConfirmation}
-            className="px-5 py-3 rounded-2xl bg-[#20C997] hover:bg-[#2ae0ab] text-[#080D1A] font-extrabold text-xs shadow-lg transition-all flex items-center gap-2 cursor-pointer"
+            className="px-5 py-3 rounded-2xl bg-[#20C997] hover:bg-[#1db889] text-[#090D1B] font-extrabold text-xs shadow-lg transition-all flex items-center gap-2 cursor-pointer"
           >
             <Lock className="w-4 h-4" />
             <span>CONFIRM RETENTION FOR {currentTeam.code}</span>
