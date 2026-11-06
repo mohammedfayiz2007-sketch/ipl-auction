@@ -120,10 +120,14 @@ export const TeamEmblem: React.FC<TeamEmblemProps> = ({ code, className = '', si
       className={`relative inline-flex items-center justify-center font-bold rounded-xl shadow-md bg-gradient-to-br ${conf.bg} border ${conf.border} ${conf.textColor} ${sizeMap[size]} ${className} select-none transition-transform hover:scale-105`}
       title={conf.name}
     >
-      <div className="flex flex-col items-center justify-center leading-tight">
-        <span className="text-[11px] opacity-80 leading-none">{conf.symbol}</span>
-        <span className="tracking-wider font-extrabold uppercase">{conf.name}</span>
-      </div>
+      {size === 'xs' ? (
+        <span className="tracking-tighter font-black text-[8px] uppercase leading-none">{conf.name}</span>
+      ) : (
+        <div className="flex flex-col items-center justify-center leading-tight">
+          <span className="text-[11px] opacity-80 leading-none">{conf.symbol}</span>
+          <span className="tracking-wider font-extrabold uppercase">{conf.name}</span>
+        </div>
+      )}
     </div>
   );
 };

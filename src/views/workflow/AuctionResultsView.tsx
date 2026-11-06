@@ -55,7 +55,7 @@ interface TeamAuctionScore {
 
 export const AuctionResultsView: React.FC = () => {
   const { teams, players, user, setInspectedPlayer, resetAuctionData, setIsGmailModalOpen } = useAuction();
-  const [selectedFranchiseId, setSelectedFranchiseId] = useState<string>('csk');
+  const [selectedFranchiseId, setSelectedFranchiseId] = useState<string>(user.selectedTeamId || 'csk');
 
   // Compute Squad Scores & Rank All 10 Franchises
   const rankedTeams: TeamAuctionScore[] = useMemo(() => {

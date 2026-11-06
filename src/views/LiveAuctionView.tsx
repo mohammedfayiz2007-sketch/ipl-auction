@@ -91,7 +91,11 @@ export const LiveAuctionView: React.FC = () => {
   };
 
   const handleBidClick = (customAmt?: number, delta?: number) => {
-    if (!userTeam) return;
+    if (!userTeam) {
+      setBidError('Please select or claim an IPL franchise before placing bids!');
+      setTimeout(() => setBidError(null), 3500);
+      return;
+    }
     const res = placeBid(userTeam.id, customAmt, delta);
     if (!res.success && res.reason) {
       setBidError(res.reason);
@@ -461,6 +465,8 @@ export const LiveAuctionView: React.FC = () => {
               <span>
                 {isUserHighestBidder
                   ? `YOU HOLD THE HIGHEST BID (${formatCrores(currentBidAmount)})`
+                  : !userTeam
+                  ? 'SELECT A FRANCHISE TO BID'
                   : !canUserAffordBid
                   ? 'INSUFFICIENT PURSE'
                   : `BID ${formatCrores(standardNextBid)} FOR ${userTeam?.code || 'YOUR FRANCHISE'}`}

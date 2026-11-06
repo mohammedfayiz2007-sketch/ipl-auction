@@ -20,6 +20,7 @@ import { RetentionConfirmationView } from './views/workflow/RetentionConfirmatio
 import { AuctionReadyView } from './views/workflow/AuctionReadyView';
 import { LiveAuctionView } from './views/LiveAuctionView';
 import { AuctionResultsView } from './views/workflow/AuctionResultsView';
+import { LandingView } from './views/LandingView';
 
 // Reference & Squad Tabs
 import { DashboardView } from './views/DashboardView';
@@ -55,6 +56,25 @@ function AppContent() {
   // STEP 1: Strict Login & Authentication Guard
   if (workflowStep === 'LOGIN') {
     return <AuthView />;
+  }
+
+  // Home / Landing Page Tab
+  if (currentTab === 'landing') {
+    return (
+      <div className="min-h-screen bg-[#F4F6FB] dark:bg-[#090D1B] text-[#0C1222] dark:text-[#F5F4FF] flex flex-col font-sans transition-colors duration-200">
+        <Navbar
+          onToggleMobileMenu={() => setIsMobileMenuOpen((prev) => !prev)}
+          isMobileMenuOpen={isMobileMenuOpen}
+        />
+        <LandingView />
+        <PlayerDetailModal />
+        <SoldCelebrationModal />
+        <GmailReportModal
+          isOpen={isGmailModalOpen}
+          onClose={() => setIsGmailModalOpen(false)}
+        />
+      </div>
+    );
   }
 
   // Render the current sequential workflow stage
@@ -108,9 +128,7 @@ function AppContent() {
     }
   };
 
-  const isBrowsingReferenceTab =
-    currentTab !== 'auction' &&
-    currentTab !== 'landing';
+  const isBrowsingReferenceTab = currentTab !== 'auction';
 
   return (
     <div className="min-h-screen bg-[#F4F6FB] dark:bg-[#090D1B] text-[#0C1222] dark:text-[#F5F4FF] flex flex-col font-sans transition-colors duration-200">

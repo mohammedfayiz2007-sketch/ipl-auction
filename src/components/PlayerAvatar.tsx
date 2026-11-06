@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Player } from '../types/auction';
 
 interface PlayerAvatarProps {
@@ -20,6 +20,10 @@ export const PlayerAvatar: React.FC<PlayerAvatarProps> = ({
   showRoleBadge = false,
 }) => {
   const [imageFailed, setImageFailed] = useState(false);
+
+  useEffect(() => {
+    setImageFailed(false);
+  }, [player.id, player.imageUrl]);
 
   const sizeClasses = {
     xs: 'w-7 h-7 rounded-lg',
@@ -141,10 +145,10 @@ export const PlayerAvatar: React.FC<PlayerAvatarProps> = ({
         {/* Marquee star badge */}
         {player.marquee && (
           <div
-            className={`absolute bg-[#F5B942] text-[#080D1A] font-black rounded shadow flex items-center justify-center ${
+            className={`absolute bg-[#E8BD68] text-[#090D1B] font-black rounded shadow flex items-center justify-center ${
               size === 'xs'
                 ? 'top-0.5 right-0.5 w-2 h-2 rounded-full p-0 text-[6px]'
-                : 'top-1 right-1 text-[9px] px-1 py-0.2'
+                : 'top-1 right-1 text-[9px] px-1 py-0.5'
             }`}
           >
             <span>★</span>
@@ -154,9 +158,9 @@ export const PlayerAvatar: React.FC<PlayerAvatarProps> = ({
 
       {/* Country & Role mini badges */}
       {showRoleBadge && size !== 'xs' && (
-        <div className="absolute -bottom-1 -right-1 flex items-center gap-1 bg-[#10192B] border border-[#21304d] rounded-full px-1.5 py-0.5 shadow-md text-[10px]">
+        <div className="absolute -bottom-1 -right-1 flex items-center gap-1 bg-[#171D35] border border-[#202944] rounded-full px-1.5 py-0.5 shadow-md text-[10px]">
           <span>{countryFlags[player.country] || '🏏'}</span>
-          <span className="font-medium text-slate-300">{player.role.slice(0, 3)}</span>
+          <span className="font-medium text-[#A5A9C3]">{player.role.slice(0, 3)}</span>
         </div>
       )}
     </div>
