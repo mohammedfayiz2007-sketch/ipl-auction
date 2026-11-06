@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useAuction } from '../context/AuctionContext';
 import { TeamEmblem } from './TeamEmblem';
 import {
@@ -11,16 +11,8 @@ import {
   VolumeX,
   Sun,
   Moon,
-  Radio,
-  Menu,
-  X,
-  User,
-  LogIn,
-  LogOut,
-  Check,
-  Mail,
   Crown,
-  Sparkles,
+  Radio,
 } from 'lucide-react';
 import { ViewTab } from '../types/auction';
 
@@ -29,7 +21,7 @@ interface NavbarProps {
   isMobileMenuOpen?: boolean;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ onToggleMobileMenu, isMobileMenuOpen }) => {
+export const Navbar: React.FC<NavbarProps> = () => {
   const {
     currentTab,
     setCurrentTab,
@@ -40,12 +32,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleMobileMenu, isMobileMenu
     user,
     teams,
     activeRoom,
-    signInGoogle,
-    signOutAccount,
-    setIsGmailModalOpen,
   } = useAuction();
-
-  const [isAuthMenuOpen, setIsAuthMenuOpen] = useState(false);
 
   const userTeam = teams.find((t) => t.id === user.selectedTeamId);
   const remainingPurse = userTeam ? (userTeam.totalPurse - userTeam.spentPurse).toFixed(2) : '120.00';
@@ -59,16 +46,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleMobileMenu, isMobileMenu
     { tab: 'trade', label: 'Trade Centre' },
     { tab: 'history', label: 'Records' },
   ];
-
-  const handleSignIn = async () => {
-    await signInGoogle();
-    setIsAuthMenuOpen(false);
-  };
-
-  const handleSignOut = async () => {
-    await signOutAccount();
-    setIsAuthMenuOpen(false);
-  };
 
   return (
     <header className="sticky top-0 z-40 w-full bg-white/90 dark:bg-[#090D1B]/95 backdrop-blur-md border-b border-[#E2E8F4] dark:border-[#202944] px-4 lg:px-8 py-3 transition-colors duration-200 shadow-sm">
@@ -162,100 +139,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleMobileMenu, isMobileMenu
             title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Obsidian Royal Dark Mode'}
           >
             {theme === 'dark' ? <Sun className="w-4 h-4 text-[#E8BD68]" /> : <Moon className="w-4 h-4 text-[#7C3AED]" />}
-          </button>
-
-          {/* Gmail Workspace Dispatch Button */}
-          {activeRoom && (
-            <button
-              onClick={() => setIsGmailModalOpen(true)}
-              aria-label="Dispatch auction ledger via Gmail"
-              className="p-2 rounded-xl bg-[#EA4335]/10 border border-[#EA4335]/30 text-[#EA4335] hover:bg-[#EA4335]/20 transition-colors cursor-pointer flex items-center gap-1.5"
-              title="Dispatch Official Report via Gmail (Google Workspace)"
-            >
-              <Mail className="w-4 h-4" />
-              <span className="hidden xl:inline text-xs font-bold">Gmail</span>
-            </button>
-          )}
-
-          {/* User Authentication Menu Button */}
-          <div className="relative">
-            <button
-              onClick={() => setIsAuthMenuOpen(!isAuthMenuOpen)}
-              className="p-2 rounded-xl bg-[#F0F4FA] dark:bg-[#11182B] border border-[#D8DFEE] dark:border-[#202944] text-[#4A5568] dark:text-[#A5A9C3] hover:text-[#0C1222] dark:hover:text-white hover:bg-[#E2E8F4] dark:hover:bg-[#171D35] transition-colors cursor-pointer flex items-center gap-1.5"
-              title={user.isAuthenticated ? `Signed in as ${user.name}` : 'Sign In'}
-            >
-              <User className={`w-4 h-4 ${user.isAuthenticated ? 'text-[#20C997]' : 'text-[#A5A9C3]'}`} />
-            </button>
-
-            {/* Auth Dropdown */}
-            {isAuthMenuOpen && (
-              <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-white dark:bg-[#171D35] border border-[#D8DFEE] dark:border-[#202944] p-3 shadow-2xl z-50 animate-in fade-in zoom-in-95">
-                <div className="pb-2.5 mb-2.5 border-b border-[#E2E8F4] dark:border-[#202944]">
-                  <span className="block text-xs font-bold text-[#0C1222] dark:text-white truncate">
-                    {user.name}
-                  </span>
-                  <span className="block text-[11px] text-[#4A5568] dark:text-[#A5A9C3] truncate">
-                    {user.email}
-                  </span>
-                  <div className="mt-1 flex items-center gap-1.5 text-[10px] text-[#20C997] font-semibold">
-                    <Check className="w-3 h-3" />
-                    <span>{user.isAuthenticated ? 'Session Verified' : 'Local Director Mode'}</span>
-                  </div>
-                </div>
-
-                {/* Quick Gmail action */}
-                {activeRoom && (
-                  <div className="pb-2.5 mb-2.5 border-b border-[#E2E8F4] dark:border-[#202944]">
-                    <button
-                      onClick={() => {
-                        setIsAuthMenuOpen(false);
-                        setIsGmailModalOpen(true);
-                      }}
-                      className="w-full py-1.5 px-3 rounded-xl bg-[#F0F4FA] dark:bg-[#202944] hover:bg-[#E2E8F4] dark:hover:bg-[#2a365a] text-[#0C1222] dark:text-slate-200 text-xs font-semibold flex items-center gap-2 transition-colors cursor-pointer"
-                    >
-                      <Mail className="w-3.5 h-3.5 text-[#EA4335]" />
-                      <span>Email Auction Ledger (Gmail)</span>
-                    </button>
-                  </div>
-                )}
-
-                {user.isAuthenticated ? (
-                  <button
-                    onClick={handleSignOut}
-                    className="w-full py-1.5 px-3 rounded-xl bg-[#F0F4FA] dark:bg-[#202944] hover:bg-[#FF5C75] text-[#4A5568] dark:text-[#A5A9C3] hover:text-white text-xs font-semibold flex items-center gap-2 transition-colors cursor-pointer"
-                  >
-                    <LogOut className="w-3.5 h-3.5" />
-                    <span>Sign Out</span>
-                  </button>
-                ) : (
-                  <button
-                    onClick={handleSignIn}
-                    className="w-full py-2 px-3 rounded-xl bg-[#7C3AED] dark:bg-[#A78BFA] hover:bg-[#6D28D9] dark:hover:bg-[#9065F7] text-white dark:text-[#090D1B] text-xs font-extrabold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md"
-                  >
-                    <LogIn className="w-3.5 h-3.5" />
-                    <span>Sign In with Google</span>
-                  </button>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Enter Auction Arena CTA Button in Electric Violet */}
-          <button
-            onClick={() => setCurrentTab('auction')}
-            className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 text-xs font-extrabold text-white dark:text-[#090D1B] bg-[#7C3AED] dark:bg-[#A78BFA] hover:bg-[#6D28D9] dark:hover:bg-[#9065F7] rounded-xl shadow-md shadow-[#A78BFA]/25 transition-all hover:scale-[1.02] active:scale-[0.98] whitespace-nowrap shrink-0 cursor-pointer"
-          >
-            <Radio className="w-3.5 h-3.5 animate-pulse text-[#00D6D0] dark:text-[#090D1B]" />
-            <span>Auction Arena</span>
-          </button>
-
-          {/* Mobile hamburger button */}
-          <button
-            onClick={onToggleMobileMenu}
-            className="md:hidden p-2 rounded-xl bg-[#F0F4FA] dark:bg-[#11182B] border border-[#D8DFEE] dark:border-[#202944] text-[#4A5568] dark:text-[#A5A9C3] hover:text-white"
-            aria-label="Toggle navigation menu"
-          >
-            {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
       </div>
