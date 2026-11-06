@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useAuction } from '../context/AuctionContext';
 import { IPLTeam } from '../types/auction';
 import { TeamEmblem } from '../components/TeamEmblem';
@@ -29,6 +29,10 @@ import {
   X,
   MapPin,
   Trophy,
+  Shield,
+  CheckCircle2,
+  DollarSign,
+  Filter,
 } from 'lucide-react';
 
 export const LiveAuctionView: React.FC = () => {
@@ -59,8 +63,36 @@ export const LiveAuctionView: React.FC = () => {
   const [bidError, setBidError] = useState<string | null>(null);
   const [selectedTeamModal, setSelectedTeamModal] = useState<IPLTeam | null>(null);
   const [showAllTeamsModal, setShowAllTeamsModal] = useState(false);
+  const [activeSquadTeamId, setActiveSquadTeamId] = useState<string>(user.selectedTeamId || 'csk');
+  const [squadRoleFilter, setSquadRoleFilter] = useState<string>('All');
+  const [sidebarViewMode, setSidebarViewMode] = useState<'teams' | 'my_squad'>('teams');
 
   const userTeam = teams.find((t) => t.id === user.selectedTeamId);
+  const activeSquadTeam = teams.find((t) => t.id === activeSquadTeamId) || userTeam || teams[0];
+
+  const activeSquadPlayers = useMemo(() => {
+    return players.filter(
+      (p) => p.soldTo === activeSquadTeam.id || activeSquadTeam.retainedPlayers.includes(p.id)
+    );
+  }, [players, activeSquadTeam]);
+
+  const filteredSquadPlayers = useMemo(() => {
+    if (squadRoleFilter === 'All') return activeSquadPlayers;
+    return activeSquadPlayers.filter((p) => p.role === squadRoleFilter);
+  }, [activeSquadPlayers, squadRoleFilter]);
+
+  const mySquadPlayers = useMemo(() => {
+    if (!userTeam) return [];
+    return players.filter(
+      (p) => p.soldTo === userTeam.id || userTeam.retainedPlayers.includes(p.id)
+    );
+  }, [players, userTeam]);
+
+  const squadOverseasCount = activeSquadPlayers.filter((p) => p.isOverseas).length;
+  const squadBatterCount = activeSquadPlayers.filter((p) => p.role === 'Batter').length;
+  const squadBowlerCount = activeSquadPlayers.filter((p) => p.role === 'Bowler').length;
+  const squadAllRounderCount = activeSquadPlayers.filter((p) => p.role === 'All-Rounder').length;
+  const squadKeeperCount = activeSquadPlayers.filter((p) => p.role === 'Wicketkeeper').length;
   const remainingPurse = userTeam
     ? Number((userTeam.totalPurse - userTeam.spentPurse).toFixed(2))
     : 120.0;
@@ -498,77 +530,143 @@ export const LiveAuctionView: React.FC = () => {
           </div>
         </div>
 
-        {/* RIGHT PANEL: 10 IPL TEAMS LIVE STATUS */}
+        {/* RIGHT PANEL: 10 IPL TEAMS LIVE STATUS & SQUAD MINI-TRACKER */}
         <div className="lg:col-span-3 p-4 rounded-3xl bg-[#171D35] border border-[#202944] flex flex-col justify-between shadow-2xl">
           <div>
             <div className="flex items-center justify-between mb-3 pb-2 border-b border-[#202944]">
               <div>
                 <span className="text-xs font-bold uppercase tracking-wider text-[#F5F4FF] font-heading block">
-                  Franchise Purse Tracker
+                  {sidebarViewMode === 'teams' ? 'Franchise Tracker' : `${userTeam?.code || 'My'} Squad (${mySquadPlayers.length})`}
                 </span>
-                <span className="text-[10px] text-[#A5A9C3]">Click team to scout squad</span>
+                <span className="text-[10px] text-[#A5A9C3]">
+                  {sidebarViewMode === 'teams' ? 'Click team to scout squad' : 'Acquired & Retained'}
+                </span>
               </div>
-              <button
-                onClick={() => setShowAllTeamsModal(true)}
-                className="text-[10px] font-bold text-[#A78BFA] hover:text-[#b8a1fb] cursor-pointer bg-[#090D1B] px-2 py-1 rounded-lg border border-[#202944] transition-colors"
-              >
-                10 Teams →
-              </button>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => setSidebarViewMode(sidebarViewMode === 'teams' ? 'my_squad' : 'teams')}
+                  className="text-[10px] font-bold text-[#00D6D0] hover:text-[#20C997] cursor-pointer bg-[#090D1B] px-2 py-1 rounded-lg border border-[#202944] transition-colors"
+                  title="Toggle between all 10 teams and your squad"
+                >
+                  {sidebarViewMode === 'teams' ? 'My Squad' : '10 Teams'}
+                </button>
+                <button
+                  onClick={() => setShowAllTeamsModal(true)}
+                  className="text-[10px] font-bold text-[#A78BFA] hover:text-[#b8a1fb] cursor-pointer bg-[#090D1B] px-2 py-1 rounded-lg border border-[#202944] transition-colors"
+                >
+                  All →
+                </button>
+              </div>
             </div>
 
-            <div className="space-y-1.5 max-h-[500px] overflow-y-auto pr-1">
-              {teams.map((team) => {
-                const remaining = Number((team.totalPurse - team.spentPurse).toFixed(2));
-                const squadCount = players.filter(
-                  (p) => p.soldTo === team.id || team.retainedPlayers.includes(p.id)
-                ).length;
-                const isLeading = lastBidderTeam?.id === team.id;
-                const isUser = user.selectedTeamId === team.id;
+            {sidebarViewMode === 'teams' ? (
+              <div className="space-y-1.5 max-h-[500px] overflow-y-auto pr-1">
+                {teams.map((team) => {
+                  const remaining = Number((team.totalPurse - team.spentPurse).toFixed(2));
+                  const squadCount = players.filter(
+                    (p) => p.soldTo === team.id || team.retainedPlayers.includes(p.id)
+                  ).length;
+                  const isLeading = lastBidderTeam?.id === team.id;
+                  const isUser = user.selectedTeamId === team.id;
 
-                return (
-                  <button
-                    key={team.id}
-                    onClick={() => setSelectedTeamModal(team)}
-                    className={`w-full p-2.5 rounded-xl transition-all flex items-center justify-between cursor-pointer text-left hover:scale-[1.01] ${
-                      isLeading
-                        ? 'bg-[#E8BD68]/20 border border-[#E8BD68] ring-1 ring-[#E8BD68]/30 shadow-md'
-                        : isUser
-                        ? 'bg-[#202944] border border-[#A78BFA]/40'
-                        : 'bg-[#090D1B] border border-[#202944] hover:border-[#A78BFA]/30'
-                    }`}
-                    title={`Click to scout ${team.name} full squad`}
-                  >
-                    <div className="flex items-center gap-2 min-w-0">
-                      <TeamEmblem code={team.code} size="sm" />
-                      <div className="min-w-0">
-                        <span className="block text-xs font-bold text-[#F5F4FF] truncate">
-                          {team.code}
-                          {isUser && <span className="text-[9px] text-[#A78BFA] ml-1 font-bold">(You)</span>}
-                        </span>
-                        <span className="text-[10px] text-[#A5A9C3]">
-                          Squad: {squadCount}/{team.maxSquad}
-                        </span>
+                  return (
+                    <button
+                      key={team.id}
+                      onClick={() => {
+                        setSelectedTeamModal(team);
+                        setActiveSquadTeamId(team.id);
+                      }}
+                      className={`w-full p-2.5 rounded-xl transition-all flex items-center justify-between cursor-pointer text-left hover:scale-[1.01] ${
+                        isLeading
+                          ? 'bg-[#E8BD68]/20 border border-[#E8BD68] ring-1 ring-[#E8BD68]/30 shadow-md'
+                          : isUser
+                          ? 'bg-[#202944] border border-[#A78BFA]/40'
+                          : 'bg-[#090D1B] border border-[#202944] hover:border-[#A78BFA]/30'
+                      }`}
+                      title={`Click to scout ${team.name} full squad`}
+                    >
+                      <div className="flex items-center gap-2 min-w-0">
+                        <TeamEmblem code={team.code} size="sm" />
+                        <div className="min-w-0">
+                          <span className="block text-xs font-bold text-[#F5F4FF] truncate">
+                            {team.code}
+                            {isUser && <span className="text-[9px] text-[#A78BFA] ml-1 font-bold">(You)</span>}
+                          </span>
+                          <span className="text-[10px] text-[#A5A9C3]">
+                            Squad: {squadCount}/{team.maxSquad}
+                          </span>
+                        </div>
                       </div>
-                    </div>
 
-                    <div className="text-right shrink-0">
-                      <span
-                        className={`text-xs font-mono font-bold tabular-nums block ${
-                          isLeading ? 'text-[#E8BD68]' : 'text-[#00D6D0]'
-                        }`}
-                      >
-                        ₹{remaining.toFixed(2)} Cr
-                      </span>
-                      {isLeading && (
-                        <span className="text-[9px] font-black text-[#E8BD68] uppercase animate-pulse">
-                          LEADING BID
+                      <div className="text-right shrink-0">
+                        <span
+                          className={`text-xs font-mono font-bold tabular-nums block ${
+                            isLeading ? 'text-[#E8BD68]' : 'text-[#00D6D0]'
+                          }`}
+                        >
+                          ₹{remaining.toFixed(2)} Cr
                         </span>
-                      )}
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
+                        {isLeading && (
+                          <span className="text-[9px] font-black text-[#E8BD68] uppercase animate-pulse">
+                            LEADING BID
+                          </span>
+                        )}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="space-y-2 max-h-[500px] overflow-y-auto pr-1">
+                {mySquadPlayers.length === 0 ? (
+                  <div className="p-6 text-center rounded-2xl bg-[#090D1B] border border-[#202944]">
+                    <span className="text-2xl block mb-1">🏏</span>
+                    <p className="text-xs text-[#A5A9C3]">
+                      No players in {userTeam?.name || 'your'} squad yet.
+                    </p>
+                    <span className="text-[10px] text-[#E8BD68] block mt-1">
+                      Place bids in the live arena to acquire cricketers!
+                    </span>
+                  </div>
+                ) : (
+                  mySquadPlayers.map((player) => {
+                    const isRetained = userTeam?.retainedPlayers.includes(player.id) || player.status === 'retained';
+                    return (
+                      <div
+                        key={player.id}
+                        onClick={() => setInspectedPlayer(player)}
+                        className="p-2 rounded-xl bg-[#090D1B] hover:bg-[#202944] border border-[#202944] hover:border-[#A78BFA]/50 transition-colors cursor-pointer flex items-center justify-between text-xs"
+                      >
+                        <div className="flex items-center gap-2 min-w-0">
+                          <PlayerAvatar player={player} size="xs" />
+                          <div className="min-w-0">
+                            <span className="font-bold text-[#F5F4FF] block truncate">
+                              {player.name}
+                            </span>
+                            <span className="text-[10px] text-[#A5A9C3] block truncate">
+                              {player.role} · {player.country}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="text-right shrink-0">
+                          <span className="font-mono font-bold text-[#00D6D0] text-[11px] block tabular-nums">
+                            {formatCrores(player.soldPrice || player.basePrice)}
+                          </span>
+                          <span
+                            className={`text-[9px] font-bold px-1 py-0.2 rounded uppercase ${
+                              isRetained ? 'text-[#E8BD68]' : 'text-[#20C997]'
+                            }`}
+                          >
+                            {isRetained ? 'Retained' : 'Won'}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            )}
           </div>
 
           <div className="mt-3 pt-2 border-t border-[#202944] text-center">
@@ -661,6 +759,184 @@ export const LiveAuctionView: React.FC = () => {
             ))}
           </div>
         </div>
+      </div>
+
+      {/* LIVE FRANCHISE SQUAD ROSTER MATRIX */}
+      <div className="p-6 rounded-3xl bg-[#171D35] border border-[#202944] shadow-2xl space-y-5">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-[#202944]">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-[#00D6D0]/10 border border-[#00D6D0]/30 text-[#00D6D0]">
+                Live Squad Matrix
+              </span>
+              <span className="text-xs text-[#A5A9C3] flex items-center gap-1 font-mono">
+                <Shield className="w-3.5 h-3.5 text-[#E8BD68]" />
+                {activeSquadTeam.name} ({activeSquadPlayers.length}/25)
+              </span>
+            </div>
+            <h2 className="text-xl sm:text-2xl font-black text-[#F5F4FF] font-heading tracking-tight">
+              Franchise Squad Rosters
+            </h2>
+            <p className="text-xs text-[#A5A9C3] mt-0.5 font-body">
+              Monitor real-time team balance, retained foundations, and newly won auction acquisitions.
+            </p>
+          </div>
+
+          {/* Quick Franchise Select Tabs */}
+          <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-thin py-1 max-w-full">
+            {teams.map((t) => {
+              const count = players.filter(
+                (p) => p.soldTo === t.id || t.retainedPlayers.includes(p.id)
+              ).length;
+              const isSelected = t.id === activeSquadTeam.id;
+              const isUserTeam = user.selectedTeamId === t.id;
+
+              return (
+                <button
+                  key={t.id}
+                  onClick={() => setActiveSquadTeamId(t.id)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 border ${
+                    isSelected
+                      ? 'bg-[#A78BFA] text-[#090D1B] border-[#A78BFA] shadow-md shadow-[#A78BFA]/20 scale-105'
+                      : isUserTeam
+                      ? 'bg-[#202944] text-[#F5F4FF] border-[#A78BFA]/50 hover:bg-[#202944]/80'
+                      : 'bg-[#090D1B] text-[#A5A9C3] border-[#202944] hover:text-[#F5F4FF] hover:border-[#A78BFA]/30'
+                  }`}
+                >
+                  <TeamEmblem code={t.code} size="xs" />
+                  <span>{t.code}</span>
+                  <span className="text-[10px] font-mono opacity-80">({count})</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Active Team Executive Bar */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 rounded-2xl bg-[#090D1B] border border-[#202944]">
+          <div>
+            <span className="text-[10px] uppercase font-bold text-[#A5A9C3] block">Squad Strength</span>
+            <div className="flex items-baseline gap-1 mt-0.5">
+              <span className={`text-xl font-black font-mono tabular-nums ${activeSquadPlayers.length >= 18 ? 'text-[#20C997]' : 'text-[#FFB84D]'}`}>
+                {activeSquadPlayers.length}
+              </span>
+              <span className="text-xs text-[#A5A9C3] font-mono">/ {activeSquadTeam.maxSquad} (Min 18)</span>
+            </div>
+          </div>
+
+          <div>
+            <span className="text-[10px] uppercase font-bold text-[#A5A9C3] block">Overseas Limit</span>
+            <div className="flex items-baseline gap-1 mt-0.5">
+              <span className={`text-xl font-black font-mono tabular-nums ${squadOverseasCount <= activeSquadTeam.maxOverseas ? 'text-[#00D6D0]' : 'text-[#FF5C75]'}`}>
+                {squadOverseasCount}
+              </span>
+              <span className="text-xs text-[#A5A9C3] font-mono">/ {activeSquadTeam.maxOverseas} (Max 8)</span>
+            </div>
+          </div>
+
+          <div>
+            <span className="text-[10px] uppercase font-bold text-[#A5A9C3] block">Remaining Purse</span>
+            <span className="text-xl font-black font-mono text-[#00D6D0] tabular-nums block mt-0.5">
+              ₹{(activeSquadTeam.totalPurse - activeSquadTeam.spentPurse).toFixed(2)} Cr
+            </span>
+          </div>
+
+          <div>
+            <span className="text-[10px] uppercase font-bold text-[#A5A9C3] block">Funds Deployed</span>
+            <span className="text-xl font-black font-mono text-[#E8BD68] tabular-nums block mt-0.5">
+              ₹{activeSquadTeam.spentPurse.toFixed(2)} Cr
+            </span>
+          </div>
+        </div>
+
+        {/* Role Filters Strip */}
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex items-center gap-1.5 overflow-x-auto">
+            {[
+              { label: 'All', count: activeSquadPlayers.length },
+              { label: 'Batter', count: squadBatterCount, icon: '🏏' },
+              { label: 'Bowler', count: squadBowlerCount, icon: '🎯' },
+              { label: 'All-Rounder', count: squadAllRounderCount, icon: '⚡' },
+              { label: 'Wicketkeeper', count: squadKeeperCount, icon: '🧤' },
+            ].map((rf) => (
+              <button
+                key={rf.label}
+                onClick={() => setSquadRoleFilter(rf.label)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 border ${
+                  squadRoleFilter === rf.label
+                    ? 'bg-[#A78BFA] text-[#090D1B] border-[#A78BFA] shadow-sm'
+                    : 'bg-[#202944] text-[#A5A9C3] border-[#202944] hover:text-[#F5F4FF]'
+                }`}
+              >
+                {rf.icon && <span>{rf.icon}</span>}
+                <span>{rf.label}</span>
+                <span className="text-[10px] font-mono opacity-80">({rf.count})</span>
+              </button>
+            ))}
+          </div>
+
+          <span className="text-xs text-[#A5A9C3]">
+            Showing <strong className="text-[#F5F4FF] font-mono">{filteredSquadPlayers.length}</strong> player(s)
+          </span>
+        </div>
+
+        {/* Squad Player Cards Grid */}
+        {filteredSquadPlayers.length === 0 ? (
+          <div className="p-10 text-center rounded-2xl bg-[#090D1B] border border-[#202944]">
+            <p className="text-xs text-[#A5A9C3]">
+              {activeSquadPlayers.length === 0
+                ? `${activeSquadTeam.name} has not retained or acquired any players yet. Bid in the live auction to build this squad!`
+                : `No players in ${activeSquadTeam.code} squad match the "${squadRoleFilter}" filter.`}
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+            {filteredSquadPlayers.map((player) => {
+              const isRetained = activeSquadTeam.retainedPlayers.includes(player.id) || player.status === 'retained';
+
+              return (
+                <div
+                  key={player.id}
+                  onClick={() => setInspectedPlayer(player)}
+                  className="p-3.5 rounded-2xl bg-[#090D1B] hover:bg-[#11182B] border border-[#202944] hover:border-[#A78BFA]/50 transition-all cursor-pointer group shadow-md"
+                >
+                  <div className="flex items-center gap-3">
+                    <PlayerAvatar player={player} size="sm" showRoleBadge />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-1">
+                        <span className="block text-xs font-bold text-[#F5F4FF] truncate group-hover:text-[#A78BFA] transition-colors">
+                          {player.name}
+                        </span>
+                        {player.marquee && (
+                          <span className="text-[9px] text-[#E8BD68]">★</span>
+                        )}
+                      </div>
+                      <span className="text-[11px] text-[#A5A9C3] block truncate">
+                        {player.role} · {player.country} {player.isOverseas ? '✈️' : ''}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="mt-3 pt-2 border-t border-[#202944] flex items-center justify-between text-[11px]">
+                    {isRetained ? (
+                      <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-[#E8BD68]/15 border border-[#E8BD68]/30 text-[#E8BD68]">
+                        Retained
+                      </span>
+                    ) : (
+                      <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-[#20C997]/15 border border-[#20C997]/30 text-[#20C997]">
+                        Auction Won
+                      </span>
+                    )}
+
+                    <span className="font-mono font-bold text-[#F5F4FF] tabular-nums">
+                      {formatCrores(player.soldPrice || player.basePrice)}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* FRANCHISE SQUAD SCOUT MODAL */}
