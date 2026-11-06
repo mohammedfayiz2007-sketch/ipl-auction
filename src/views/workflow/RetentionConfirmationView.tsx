@@ -18,6 +18,7 @@ import {
   Check,
   AlertCircle,
   Sparkles,
+  Unlock,
 } from 'lucide-react';
 
 export const RetentionConfirmationView: React.FC<{ onFinalize: () => void }> = ({
@@ -29,6 +30,7 @@ export const RetentionConfirmationView: React.FC<{ onFinalize: () => void }> = (
     players,
     user,
     confirmTeamRetention,
+    unlockTeamRetention,
     autoConfirmBotRetentions,
   } = useAuction();
 
@@ -184,9 +186,19 @@ export const RetentionConfirmationView: React.FC<{ onFinalize: () => void }> = (
                 <span>CONFIRM RETENTION FOR {userTeam.code}</span>
               </button>
             ) : (
-              <div className="p-3 rounded-xl bg-[#090D1B] border border-[#20C997]/30 text-center text-xs text-[#20C997] font-semibold flex items-center justify-center gap-2">
-                <Lock className="w-3.5 h-3.5" />
-                <span>Decision Locked. Waiting for other franchises to confirm...</span>
+              <div className="p-3.5 rounded-2xl bg-[#090D1B] border border-[#20C997]/30 flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2 text-xs text-[#20C997] font-semibold">
+                  <Lock className="w-3.5 h-3.5 shrink-0" />
+                  <span>Decision Locked. Waiting for other franchises...</span>
+                </div>
+                <button
+                  onClick={() => unlockTeamRetention(userTeam.id)}
+                  className="px-3.5 py-1.5 rounded-xl bg-[#FF5C75]/20 hover:bg-[#FF5C75] text-[#FF5C75] hover:text-white border border-[#FF5C75]/40 font-extrabold text-xs transition-all cursor-pointer flex items-center gap-1 shrink-0"
+                  title="Remove lock and edit retentions"
+                >
+                  <Unlock className="w-3.5 h-3.5" />
+                  <span>Remove Lock</span>
+                </button>
               </div>
             )}
           </div>

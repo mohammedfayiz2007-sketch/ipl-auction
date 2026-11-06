@@ -100,7 +100,9 @@ interface AuctionContextType {
   autoFillRemainingWithBots: () => void;
   startRetentionPhase: () => void;
   confirmTeamRetention: (teamId: string) => void;
+  unlockTeamRetention: (teamId: string) => void;
   autoConfirmBotRetentions: () => void;
+  unlockAllRetentions: () => void;
   finalizeAllRetentions: () => { success: boolean; error?: string } | void;
   startLiveMegaAuction: () => { success: boolean; error?: string } | void;
   pauseAuction: () => void;
@@ -765,6 +767,69 @@ export const AuctionProvider: React.FC<{ children: React.ReactNode }> = ({ child
     });
 
     addActivity('retention', `${team.name} locked and confirmed retention decisions (${team.retainedPlayers.length} player(s) retained & excluded from auction).`);
+  };
+
+  // Unlock Team Retention (Remove Lock)
+  const unlockTeamRetention = (teamId: string) => {
+    if (!activeRoom) return;
+    const team = teams.find((t) => t.id === teamId);
+
+    setActiveRoom((prev) => {
+      if (!prev) return null;
+      const currentRec = prev.retentions[teamId];
+      const updatedRetentions = {
+        ...prev.retentions,
+        [teamId]: currentRec
+          ? {
+              ...currentRec,
+              isConfirmed: false,
+              confirmedAt: undefined,
+            }
+          : {
+              teamId,
+              retainedPlayerIds: team?.retainedPlayers || [],
+              releasedPlayerIds: [],
+              totalRetentionCost: team?.spentPurse || 0,
+              remainingPurse: team ? Number((team.totalPurse - team.spentPurse).toFixed(2)) : 120,
+              isConfirmed: false,
+            },
+      };
+
+      return {
+        ...prev,
+        status: 'RETENTION_PHASE',
+        retentions: updatedRetentions,
+      };
+    });
+
+    addActivity('retention', `${team?.name || teamId.toUpperCase()} removed retention lock. Manager can now modify retained players.`);
+  };
+
+  // Unlock All Retentions
+  const unlockAllRetentions = () => {
+    if (!activeRoom) return;
+
+    setActiveRoom((prev) => {
+      if (!prev) return null;
+      const updatedRetentions = { ...prev.retentions };
+      Object.keys(updatedRetentions).forEach((tid) => {
+        if (updatedRetentions[tid]) {
+          updatedRetentions[tid] = {
+            ...updatedRetentions[tid],
+            isConfirmed: false,
+            confirmedAt: undefined,
+          };
+        }
+      });
+
+      return {
+        ...prev,
+        status: 'RETENTION_PHASE',
+        retentions: updatedRetentions,
+      };
+    });
+
+    addActivity('retention', 'All franchise retention locks have been removed. Managers can now modify player selections.');
   };
 
   // Auto-confirm bot retentions (Section 8)
@@ -1624,7 +1689,9 @@ export const AuctionProvider: React.FC<{ children: React.ReactNode }> = ({ child
         autoFillRemainingWithBots,
         startRetentionPhase,
         confirmTeamRetention,
+        unlockTeamRetention,
         autoConfirmBotRetentions,
+        unlockAllRetentions,
         finalizeAllRetentions,
         startLiveMegaAuction,
         pauseAuction,
