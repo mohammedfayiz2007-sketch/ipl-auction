@@ -16,7 +16,6 @@ import {
   Shield,
   RotateCcw,
   Award,
-  Mail,
   Crown,
   Medal,
   Sparkles,
@@ -54,7 +53,7 @@ interface TeamAuctionScore {
 }
 
 export const AuctionResultsView: React.FC = () => {
-  const { teams, players, user, setInspectedPlayer, resetAuctionData, setIsGmailModalOpen } = useAuction();
+  const { teams, players, user, setInspectedPlayer, resetAuctionData } = useAuction();
   const [selectedFranchiseId, setSelectedFranchiseId] = useState<string>(user.selectedTeamId || 'csk');
 
   // Compute Squad Scores & Rank All 10 Franchises
@@ -283,14 +282,6 @@ export const AuctionResultsView: React.FC = () => {
             </span>
 
             <div className="flex items-center gap-3">
-              <button
-                onClick={() => setIsGmailModalOpen(true)}
-                className="px-5 py-2.5 rounded-xl bg-[#FF5C75] hover:bg-[#e04860] text-white font-extrabold text-xs shadow-lg shadow-[#FF5C75]/25 transition-all cursor-pointer flex items-center gap-2"
-              >
-                <Mail className="w-4 h-4" />
-                <span>Email Certified Ledger via Gmail</span>
-              </button>
-
               <button
                 onClick={resetAuctionData}
                 className="px-5 py-2.5 rounded-xl bg-[#A78BFA] hover:bg-[#b8a1fb] text-[#090D1B] font-extrabold text-xs shadow-md transition-all cursor-pointer flex items-center gap-1.5"
